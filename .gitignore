@@ -1,2 +1,4 @@
 *.o
 eigen/*
+*~
+.DS_Store
