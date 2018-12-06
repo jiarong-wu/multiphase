@@ -1,4 +1,4 @@
 *.o
 eigen/*
-*~
+.gitignore~
 .DS_Store
