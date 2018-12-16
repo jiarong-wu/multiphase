@@ -45,9 +45,10 @@ variable "a" in the actual code.
 
 */
 
-
+#include "problem.h"
 #include "problem_poisson.h"
 #include "problem_flow.h"
+#include "problem_vertical.h"
 #include "cell.h"
 
 int main()
@@ -56,8 +57,12 @@ int main()
   // ProblemPoisson poisson;
   // poisson.run();
   
-  ProblemFlow two_phase_flow;
-  two_phase_flow.run();
+  // ProblemFlow two_phase_flow;
+  // two_phase_flow.run();
+  
+  ProblemVertical VE_model;
+  VE_model.run();
+ 
   
   return 0;
 

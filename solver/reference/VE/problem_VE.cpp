@@ -241,7 +241,6 @@ void ProblemVE::post_processing(){}
     error += pow(boundary_function_S(cell.cell_center_, time) - new_S_solution(i), 2)*Area; 
   }
   error = sqrt(error);
-
   // L2 norm should convege in first order w.r.t. mesh size
   cout << "L2 norm error is " << error << endl;
   }*/

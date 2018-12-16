@@ -1,4 +1,5 @@
-*.o
+output/*
+object/*
 eigen/*
 .gitignore~
 .DS_Store

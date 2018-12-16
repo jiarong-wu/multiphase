@@ -1,4 +1,4 @@
-#include "cell.h"
+ #include "cell.h"
 
 Cell::Cell(int id)
 {
@@ -8,13 +8,6 @@ Cell::Cell(int id)
   id_ = id;
   ini_coordinates();
   ini_neighbours();
-
-  Delta_x_; //??
-  Delta_y_;
-  Nabla_x_;
-  Nable_y_;
-  delta_x_;
-  delta_y_;
 }
 
 void Cell::ini_coordinates()

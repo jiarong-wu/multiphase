@@ -1,6 +1,6 @@
 CC = g++
 
-EXE = flowww
+EXE = Flow
 
 SRC_DIR = source
 OBJ_DIR = object
@@ -14,7 +14,7 @@ INC = $(wildcard $(INC_DIR)/*.h)
 
 OUT = $(wildcard $(OUT_DIR)/*.vtk)
 
-CFLAGS = -I$(INC_DIR) -I$(LIB_DIR) -std=c++11
+CFLAGS = -I$(INC_DIR) -I$(LIB_DIR)
 
 run: $(EXE)
 	./$(EXE)

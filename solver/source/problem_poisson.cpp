@@ -6,7 +6,9 @@ ProblemPoisson::ProblemPoisson()
 x(CELL_NUMBER),
 b(CELL_NUMBER),
 A(CELL_NUMBER, CELL_NUMBER)
-{}
+{
+  helper_poisson_ptr = new HelperPoisson;
+}
 
 void ProblemPoisson::run()
 {
@@ -40,7 +42,7 @@ void ProblemPoisson::assemble_system()
       if (it->second == OUTSIDE_CELL_ID)
       {
         triplet_list.push_back(T(cell.id_, cell.id_, -2));
-        double x_boundary_value = get_boundary_value_x(cell, it->first);
+        double x_boundary_value = helper_poisson_ptr->get_boundary_value_x(cell, it->first);
         b(cell.id_) += -2*x_boundary_value;
       }
       else
@@ -56,7 +58,7 @@ void ProblemPoisson::assemble_system()
         counter++;   
     }
     // Volume contribution
-    double rhs_f = rhs_function(cell.cell_center_);
+    double rhs_f = helper_poisson_ptr->rhs_function(cell.cell_center_);
     b(cell.id_) += -rhs_f*Area;
   }
 
@@ -102,7 +104,7 @@ void ProblemPoisson::post_processing()
   for (int i = 0; i < CELL_NUMBER; ++i)
   {
     Cell cell(i);
-    error += pow(boundary_function_x(cell.cell_center_) - x(i), 2)*Area; 
+    error += pow(helper_poisson_ptr->boundary_function_x(cell.cell_center_) - x(i), 2)*Area; 
   }
   error = sqrt(error);
 
@@ -114,3 +116,7 @@ void ProblemPoisson::post_processing()
 
 
 
+ProblemPoisson::~ProblemPoisson()
+{
+  delete helper_poisson_ptr;
+}
