@@ -1,16 +1,18 @@
 CC = g++
 
-EXE = Possion
+EXE = Flow
 
 SRC_DIR = source
 OBJ_DIR = object
 INC_DIR = include
 LIB_DIR = ../eigen
-
+OUT_DIR = output
 
 SRC = $(wildcard $(SRC_DIR)/*.cpp)
 OBJ = $(SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 INC = $(wildcard $(INC_DIR)/*.h)
+
+OUT = $(wildcard $(OUT_DIR)/*.vtk)
 
 CFLAGS = -I$(INC_DIR) -I$(LIB_DIR)
 
@@ -26,4 +28,4 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(INC)
 .PHONY: clean	
 
 clean:
-	rm $(EXE) $(OBJ)
+	rm $(EXE) $(OBJ) $(OUT)

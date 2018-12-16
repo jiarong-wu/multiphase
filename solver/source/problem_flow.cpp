@@ -8,17 +8,45 @@ new_S_solution(CELL_NUMBER),
 old_p_solution(CELL_NUMBER), 
 old_S_solution(CELL_NUMBER), 
 system_rhs(CELL_NUMBER),
-system_matrix(CELL_NUMBER, CELL_NUMBER)
+flag_vector(CELL_NUMBER),
+system_matrix(CELL_NUMBER, CELL_NUMBER),
+time(0)
 {
-  // Do we need to initialize those vectors and matrix with all zero? It seems to be automatically done.
+  helper_flow_ptr = new HelperFlow;
 }
 
 
 void ProblemFlow::run()
 {
-  interpolate_S(old_S_solution);
-  interpolate_p(old_p_solution);
-  run_one_step();
+
+  // interpolate_S(old_S_solution);
+  // interpolate_p(old_p_solution);
+
+  helper_flow_ptr->interpolate_S(old_S_solution, time);
+  helper_flow_ptr->interpolate_p(old_p_solution, time);
+
+  cout << "Total number of dofs is " << CELL_NUMBER << endl;
+
+  for (int i = 0; i < 30; ++i)
+  {
+
+    time += DELTA_T;
+
+    triplet_list.clear();
+    system_rhs.setZero();
+    system_matrix.setZero();
+
+    cout << "This is time step " << i << endl;
+    run_one_step();
+    if (i%10 == 0)
+    {
+      output_results(i/10);
+    }
+
+    // assert(("Numerical issue! Saturation is out of bound!",  new_p_solution.maxCoeff() < 2 &&  new_p_solution.maxCoeff() >  -1));
+  }
+
+  post_processing();
 }
 
 
@@ -27,8 +55,6 @@ void ProblemFlow::run_one_step()
   assemble_system_p();
   solve_p();
   compute_S();
-  output_results();
-
 }
 
 
@@ -43,12 +69,12 @@ void ProblemFlow::assemble_system_p()
     map<DIRECTION, int>::iterator it;
     for (it = cell.neighbour_ids_.begin(); it != cell.neighbour_ids_.end(); it++)
     {
-      double K_component = compute_K(cell, it->first);
-      double saturation = get_saturation(cell, it->first, old_p_solution, old_S_solution);
-      double mobility = get_mobility(saturation);
+      // double K_component = compute_K(cell, it->first);
+      // double saturation = get_saturation(cell, it->first, old_p_solution, old_S_solution);
+      // double mobility = get_mobility(saturation);
 
-      mobility = 1;
-      // K_component = 1;
+      double saturation = helper_flow_ptr->get_saturation(cell, it->first, old_p_solution, old_S_solution, time);
+      double kappa = helper_flow_ptr->get_kappa(saturation);
 
       // if (saturation > 0.9)
       // {
@@ -56,27 +82,41 @@ void ProblemFlow::assemble_system_p()
       //   cout << "(" << cell.face_centers_[it->first][0] << " , " << cell.face_centers_[it->first][1] << ")" << endl << endl; 
       // }
 
-      cout << "K_component value is " << K_component << endl; 
+      // // Face contribution
+      // if (it->second == OUTSIDE_CELL_ID)
+      // {
+      //   double p_boundary_value = get_boundary_value_p(cell, it->first);
+      //   system_rhs(cell.id_) += 2*K_component*mobility*p_boundary_value;
+      //   triplet_list.push_back(T(cell.id_, cell.id_, 2*K_component*mobility));
+      // }
+      // else
+      // {
+      //   triplet_list.push_back(T(cell.id_, cell.id_, 1*K_component*mobility));
+      //   triplet_list.push_back(T(cell.id_, it->second, -1*K_component*mobility));
+      // }
 
 
 
       // Face contribution
       if (it->second == OUTSIDE_CELL_ID)
       {
-        double p_boundary_value = get_boundary_value_p(cell, it->first);
-        // cout << p_boundary_value << endl;
-        system_rhs(cell.id_) += -2*K_component*mobility*p_boundary_value;
-        triplet_list.push_back(T(cell.id_, cell.id_, -2*K_component*mobility));
+        double p_boundary_value = helper_flow_ptr->get_boundary_value_p(cell, it->first, time);
+        system_rhs(cell.id_) += 2*kappa*p_boundary_value;
+        triplet_list.push_back(T(cell.id_, cell.id_, 2*kappa));
       }
       else
       {
-        triplet_list.push_back(T(cell.id_, cell.id_, -1*K_component*mobility));
-        triplet_list.push_back(T(cell.id_, it->second, 1*K_component*mobility));
+        triplet_list.push_back(T(cell.id_, cell.id_, 1*kappa));
+        triplet_list.push_back(T(cell.id_, it->second, -1*kappa));
       }
+
+
+
+
     }
 
     // Volume contribution
-    // system_rhs(cell.id_) += -1*Area;
+    system_rhs(cell.id_) += 0*Area;
   }
 
   // This is a very efficient way of assembling the matrix A. The function is provided by the external library Eigen.
@@ -96,10 +136,12 @@ void ProblemFlow::solve_p()
   solver.factorize(system_matrix); 
   new_p_solution = solver.solve(system_rhs); 
 
-  cout << MatrixXd(system_matrix) << endl;
+  // cout << MatrixXd(system_matrix) << endl;
   // cout << new_p_solution << endl;
   // cout << system_rhs << endl;
   // cout << new_p_solution.maxCoeff() << endl;
+
+  old_p_solution = new_p_solution;
 
 }
 
@@ -107,24 +149,85 @@ void ProblemFlow::solve_p()
 void ProblemFlow::compute_S()
 {
 
-  // VectorXd test_v(10);
-  // test_v(2) = 1;
-  // cout << test_v << endl << endl;
-  // VectorXd test_v_1(10);
-  // test_v_1(3) = 2;
-  // test_v = test_v_1;
-  // cout << test_v << endl;
+  new_S_solution.setZero();
 
+  for (int id = 0; id < CELL_NUMBER; ++id)
+  {
+    Cell cell(id);
+    map<DIRECTION, int>::iterator it;
+    for (it = cell.neighbour_ids_.begin(); it != cell.neighbour_ids_.end(); it++)
+    {
+
+      // double K_component = compute_K(cell, it->first);
+      // double saturation = get_saturation(cell, it->first, old_p_solution, old_S_solution);
+      // double mobility = get_mobility(saturation);
+      // double fraction = get_fraction(saturation);
+
+      double wind;
+
+      double saturation = helper_flow_ptr->get_saturation(cell, it->first, old_p_solution, old_S_solution, time);
+      double kappa = helper_flow_ptr->get_kappa(saturation);
+
+
+      bool is_upwind = helper_flow_ptr->determine_upwind(cell, it->first, old_p_solution, time);
+
+      // Face contribution
+      if (it->second == OUTSIDE_CELL_ID)
+        wind = (helper_flow_ptr->get_boundary_value_p(cell, it->first, time) - old_p_solution(cell.id_))/(H/2.);
+      else
+        wind = (old_p_solution(it->second) - old_p_solution(cell.id_))/H;
+
+      // new_S_solution(cell.id_) += fraction*mobility*K_component*wind*H*DELTA_T/Area; 
+
+      new_S_solution(cell.id_) += saturation*kappa*wind*H*DELTA_T/Area; 
+
+    }
+
+    // Volume contribution
+    new_S_solution(cell.id_) += old_S_solution(cell.id_);
+
+
+  }
+  old_S_solution = new_S_solution;
 
 }
 
 
-void ProblemFlow::output_results()
+void ProblemFlow::output_results(int cycle)
 {
-  OutputManager output_manager;
-  output_manager.scalar_output(new_p_solution);
+
+
+  VectorXd exact_p_solution(CELL_NUMBER);
+  helper_flow_ptr->interpolate_p(exact_p_solution, time);
+
+  string p_name = "p";
+  string S_name = "S";
+  OutputManager output_manager(cycle);
+
+  output_manager.scalar_output(old_p_solution, p_name);
+  output_manager.scalar_output(new_S_solution, S_name);  
+  output_manager.scalar_output(exact_p_solution, "p_exact");
+ 
 }
 
 
 
+void ProblemFlow::post_processing()
+{
+  double error = 0;
+  for (int i = 0; i < CELL_NUMBER; ++i)
+  {
+    Cell cell(i);
+    error += pow(helper_flow_ptr->boundary_function_S(cell.cell_center_, time) - new_S_solution(i), 2)*Area; 
+  }
+  error = sqrt(error);
 
+  // L2 norm should convege in first order w.r.t. mesh size
+  cout << "L2 norm error is " << error << endl;
+}
+
+
+ProblemFlow::~ProblemFlow()
+{
+  delete helper_flow_ptr;
+}

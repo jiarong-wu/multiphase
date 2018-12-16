@@ -1,16 +1,18 @@
-#ifndef PROBLEM_H
-#define PROBLEM_H
+#ifndef PROBLEM_POISSON_H
+#define PROBLEM_POISSON_H
 
 #include "common_definitions.h"
 #include "cell.h"
 #include "output_manager.h"
-#include "tools.h"
+#include "problem.h"
+#include "helper_poisson.h"
 
-class ProblemPoisson
+class ProblemPoisson : public Problem 
 {
 	public:
     /* Constructor. */
     ProblemPoisson(); 
+    ~ProblemPoisson();     
     /* Run this problem. */
     void run(); 
     	
@@ -19,6 +21,9 @@ class ProblemPoisson
     VectorXd x, b;
     SparseMatrix<double> A;
     vector<T> triplet_list;
+
+    HelperPoisson* helper_poisson_ptr;
+
 
     void pre_processing();
     void assemble_system();

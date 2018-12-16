@@ -1,5 +1,8 @@
-*.o
+solver/output/*
+solver/object/*
+solver/Flow
 eigen/*
+*.vtk
 .gitignore~
 .DS_Store
 googletest/*

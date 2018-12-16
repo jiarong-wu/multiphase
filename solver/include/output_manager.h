@@ -11,10 +11,12 @@ class OutputManager
   	string solution_name_;
   	string output_path_;
 
-		/* Constructor */
-		OutputManager();
+    int cycle_;
 
-		void scalar_output(VectorXd &x);
+		/* Constructor */
+		OutputManager(int cycle);
+
+		void scalar_output(VectorXd &x, const string &name);
 		void vector_output();
 
 };

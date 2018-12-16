@@ -1,9 +1,10 @@
-#include "tools.h"
+ #include "helper_vertical.h"
+
 
 // Rubbish code, change later
 const double mu = 0.2;
 
-void interpolate(VectorXd &solution /* To do: There should be a function pointer as another argument here */)
+void HelperVertical::interpolate(VectorXd &solution /* To do: There should be a function pointer as another argument here */)
 {
 
   for (int id = 0; id < solution.size(); ++id)
@@ -15,7 +16,7 @@ void interpolate(VectorXd &solution /* To do: There should be a function pointer
 }
 
 
-void interpolate_S(VectorXd &solution /* This function is a rubbish version. Got to be deleted and replaced. */)
+void HelperVertical::interpolate_S(VectorXd &solution /* This function is a rubbish version. Got to be deleted and replaced. */)
 {
   for (int i = 0; i < solution.size(); ++i)
   {
@@ -23,7 +24,11 @@ void interpolate_S(VectorXd &solution /* This function is a rubbish version. Got
   } 
 }
 
-void interpolate_p(VectorXd &solution /* This function is a rubbish version. Got to be deleted and replaced. */)
+
+
+
+
+void HelperVertical::interpolate_p(VectorXd &solution /* This function is a rubbish version. Got to be deleted and replaced. */)
 {
   for (int i = 0; i < solution.size(); ++i)
   {
@@ -32,32 +37,52 @@ void interpolate_p(VectorXd &solution /* This function is a rubbish version. Got
   } 
 }
 
-double compute_K(Cell &cell, DIRECTION direction)
+
+
+
+double HelperVertical::compute_K(Cell &cell, DIRECTION direction)
 {
+  // return 1;
+
+
+  // if (direction == WEST || direction == EAST)
+  // {
+  //   return 1;   
+  // }
+  // else
+  // {
+  //   return 1;
+  // }
+
   if (direction == WEST || direction == EAST)
   {
-    // return 100*fabs(sin(2*M_PI*cell.face_centers_[direction][1])) + 1e-3;
-    return 100;   
+    srand(cell.id_);
+    return (rand()%RONDOM_N + 1)/(double)RONDOM_N;   
   }
   else
   {
-    return 1;
+    srand(cell.id_ + CELL_NUMBER);
+    return (rand()%RONDOM_N + 1)/(double)RONDOM_N;
   }
 }
 
-double get_mobility(double S)
+
+
+double HelperVertical::get_mobility(double S)
 {
   return 1./mu*pow(S, 2) + pow(1-S, 2);
 }
 
-double get_fraction(double S)
+double HelperVertical::get_fraction(double S)
 {
   return pow(S, 2)/(pow(S, 2) + mu*pow(1-S, 2));
 }
 
 
+
+
 // Garbage code
-bool determine_upwind(Cell &cell, DIRECTION direction, VectorXd &p_solution)
+bool HelperVertical::determine_upwind(Cell &cell, DIRECTION direction, VectorXd &p_solution)
 {
   double p_self = p_solution(cell.id_);
 
@@ -67,11 +92,13 @@ bool determine_upwind(Cell &cell, DIRECTION direction, VectorXd &p_solution)
   else
     p_other = p_solution(cell.neighbour_ids_[direction]);
 
-  return p_self - p_other > 0 ? true : false; 
-
+  return p_self - p_other >= 0 ? true : false; 
 }
 
-double get_saturation(Cell &cell, DIRECTION direction, VectorXd &p_solution, VectorXd &S_solution)
+
+
+
+double HelperVertical::get_saturation(Cell &cell, DIRECTION direction, VectorXd &p_solution, VectorXd &S_solution)
 {
   bool is_upwind = determine_upwind(cell, direction, p_solution);
 
@@ -88,30 +115,29 @@ double get_saturation(Cell &cell, DIRECTION direction, VectorXd &p_solution, Vec
   }
 }
 
-double get_boundary_value_p(Cell &cell, DIRECTION direction)
+
+double HelperVertical::get_boundary_value_p(Cell &cell, DIRECTION direction)
 {
   assert(("Bug! This face should be a boundary face but it is not!", cell.neighbour_ids_[direction] == OUTSIDE_CELL_ID));
   return boundary_function_p(cell.face_centers_[direction]);
 }
 
-double get_boundary_value_S(Cell &cell, DIRECTION direction)
+
+double HelperVertical::get_boundary_value_S(Cell &cell, DIRECTION direction)
 {
   assert(("Bug! This face should be a boundary face but it is not!", cell.neighbour_ids_[direction] == OUTSIDE_CELL_ID));
   return boundary_function_S(cell.face_centers_[direction]);
 }
 
-double get_boundary_value_x(Cell &cell, DIRECTION direction)
-{
-  assert(("Bug! This face should be a boundary face but it is not!", cell.neighbour_ids_[direction] == OUTSIDE_CELL_ID));
-  return boundary_function_x(cell.face_centers_[direction]);
-}
 
-double boundary_function_p(vec &point)
+double HelperVertical::boundary_function_p(vec &point)
 {
   return 2 - point[0];
 }
 
-double boundary_function_S(vec &point)
+
+
+double HelperVertical::boundary_function_S(vec &point)
 {
   if (point[0] < 1e-10)
     return 1;
@@ -119,13 +145,6 @@ double boundary_function_S(vec &point)
     return 0;
 }
 
-double boundary_function_x(vec &point)
-{
-  return sin(2*M_PI*(point[0] + point[1]));
-}
 
-double rhs_function(vec &point)
-{
-  // Mannualy set the rhs function so that the home made analytical solution is satisfied in the poisson equation
-  return 8*pow(M_PI, 2)*sin(2*M_PI*(point[0] + point[1]));
-}
+
+

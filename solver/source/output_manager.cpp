@@ -1,16 +1,27 @@
  #include "output_manager.h"
 
 
-OutputManager::OutputManager()
+OutputManager::OutputManager(int cycle)
+:
+cycle_(cycle)
 {
   // Do we have to put anything here into the constructor?
 }
 
-void OutputManager::scalar_output(VectorXd &x)
+void OutputManager::scalar_output(VectorXd &x, const string &name)
 {
 
+
+  string s_1 = "output/";
+  string s_2 = "-";
+  string s_3 = ".vtk";
+  stringstream ss_filename;
+  ss_filename << s_1 << name << s_2 << cycle_ << s_3;
+  string s_filename = ss_filename.str();
+
   // Create a vtk file for output
-  ofstream vtkstream("output/u.vtk");
+  // ofstream vtkstream("output/u.vtk");
+  ofstream vtkstream(s_filename);
 
   // Follow the format of vtk files and write our mesh and solution into this file.
   vtkstream << "# vtk DataFile Version 3.0" << endl;

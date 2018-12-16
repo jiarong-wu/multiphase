@@ -12,6 +12,7 @@
 #include <cmath>
 #include <algorithm>
 #include <numeric>
+#include <time.h>
 #include <Eigen/Sparse>
 
 using namespace Eigen;
@@ -31,7 +32,7 @@ typedef vector<int> int_vec;
 
 /* How many times we want to refine the mesh.
    For each time, one square cell is divided into four. */
-const int DIVISION = 6;
+const int DIVISION = 5;
 
 /* Total number of elements*/
 const int CELL_NUMBER = pow(4, DIVISION);
@@ -74,6 +75,10 @@ const double Area = H*H;
 /* Used in outputing VTK files */
 const int CELL_TYPE = 9;
 
+/* For generating random permeability tensor */
+const int RONDOM_N = 1000;
+
+const double DELTA_T = 0.0005;
 
 /* {WEST} = 0, {EAST} = 1, {SOUTH} = 2, {NORTH} = 3, {NUMBER_DIRECTIONS} = 4 */
 enum DIRECTION {WEST, EAST, SOUTH, NORTH, NUMBER_DIRECTIONS};
