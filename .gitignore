@@ -2,3 +2,4 @@
 eigen/*
 .gitignore~
 .DS_Store
+googletest/*
