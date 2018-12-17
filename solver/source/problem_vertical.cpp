@@ -3,10 +3,19 @@
 
 ProblemVertical::ProblemVertical()
 :
-new_p_solution(CELL_NUMBER), 
-new_S_solution(CELL_NUMBER), 
-old_p_solution(CELL_NUMBER), 
-old_S_solution(CELL_NUMBER), 
+new_Pc_solution(CELL_NUMBER), 
+new_Sc_solution(CELL_NUMBER), 
+old_Pc_solution(CELL_NUMBER), 
+old_Sc_solution(CELL_NUMBER), 
+
+new_Pb_solution(CELL_NUMBER), 
+new_Sb_solution(CELL_NUMBER), 
+old_Pb_solution(CELL_NUMBER), 
+old_Sb_solution(CELL_NUMBER), 
+
+new_Pcap_solution(CELL_NUMBER),
+old_Pcap_solution(CELL_NUMBER),
+
 system_rhs(CELL_NUMBER),
 flag_vector(CELL_NUMBER),
 system_matrix(CELL_NUMBER, CELL_NUMBER),
@@ -19,12 +28,15 @@ time(0)
 void ProblemVertical::run()
 {
 
-  helper_vertical_ptr->interpolate_S(old_S_solution);
-  helper_vertical_ptr->interpolate_p(old_p_solution);
+  helper_vertical_ptr->initial_condition_Sc(old_Sc_solution);
+  helper_vertical_ptr->initial_condition_Sb(old_Sb_solution, old_Sc_solution);  
+  helper_vertical_ptr->initial_condition_Pb(old_Pb_solution);
+  helper_vertical_ptr->initial_condition_Pcap(old_Pcap_solution, old_Sc_solution);
+  helper_vertical_ptr->initial_condition_Pc(old_Pc_solution, old_Pb_solution, old_Pcap_solution);
 
   cout << "Total number of dofs is " << CELL_NUMBER << endl;
 
-  for (int i = 0; i < 30; ++i)
+  for (int i = 0; i < 500; ++i)
   {
 
     time += DELTA_T;
@@ -54,6 +66,8 @@ void ProblemVertical::run_one_step()
   compute_Pc();
   compute_Sc();
   compute_Sb();
+  compute_Pcap(); 
+  update();  
 }
 
 
@@ -68,9 +82,26 @@ void ProblemVertical::assemble_system_Pb()
     map<DIRECTION, int>::iterator it;
     for (it = cell.neighbour_ids_.begin(); it != cell.neighbour_ids_.end(); it++)
     {
+
+      double saturation = helper_vertical_ptr->get_saturation(cell, it->first, old_Sc_solution, old_Pb_solution, old_Pc_solution, old_Pcap_solution);
+
+      // if (saturation > 1e-5)
+      // {
+      //   cout << "cell id is " << cell.id_ << endl;        
+      //   cout << "saturation is " << saturation << endl;
+      // }
+
+
+      double coeff_b = helper_vertical_ptr->get_coeff_b(saturation);
+      double coeff_c = helper_vertical_ptr->get_coeff_c(saturation);
+
+      // if (saturation > 1e-5)
+      // {
+      //   cout << "saturation is " << saturation << " and coeff_b is " << coeff_b << " and coeff_c is " << coeff_c << endl;
+      // }
+
+
       double K_component = helper_vertical_ptr->compute_K(cell, it->first);
-      double saturation = helper_vertical_ptr->get_saturation(cell, it->first, old_p_solution, old_S_solution);
-      double mobility = helper_vertical_ptr->get_mobility(saturation);
 
       // if (saturation > 0.9)
       // {
@@ -78,23 +109,55 @@ void ProblemVertical::assemble_system_Pb()
       //   cout << "(" << cell.face_centers_[it->first][0] << " , " << cell.face_centers_[it->first][1] << ")" << endl << endl; 
       // }
 
+
       // Face contribution
       if (it->second == OUTSIDE_CELL_ID)
       {
-        double p_boundary_value = helper_vertical_ptr->get_boundary_value_p(cell, it->first);
-        system_rhs(cell.id_) += 2*K_component*mobility*p_boundary_value;
-        triplet_list.push_back(T(cell.id_, cell.id_, 2*K_component*mobility));
+        double Pb_boundary_value   = helper_vertical_ptr->get_boundary_value_Pb(cell, it->first);
+
+        double Pcap_ghost_value = helper_vertical_ptr->get_ghost_value_Pcap(cell, it->first, old_Pcap_solution);
+        double Pcap_self_value = old_Pcap_solution(cell.id_);
+
+
+        assert(("Bug! Ghost value of Pb should be the same as inside", fabs(Pcap_ghost_value - Pcap_self_value) < 1e-10));
+
+        system_rhs(cell.id_) += -2*(coeff_b + coeff_c)*Pb_boundary_value;
+        triplet_list.push_back(T(cell.id_, cell.id_, -2*(coeff_b + coeff_c)));
+
+        system_rhs(cell.id_) += -coeff_c*Pcap_ghost_value;
+        system_rhs(cell.id_) +=  coeff_c*Pcap_self_value;
+
       }
       else
       {
-        triplet_list.push_back(T(cell.id_, cell.id_, 1*K_component*mobility));
-        triplet_list.push_back(T(cell.id_, it->second, -1*K_component*mobility));
+     
+        triplet_list.push_back(T(cell.id_, cell.id_,  -(coeff_b + coeff_c)));
+        triplet_list.push_back(T(cell.id_, it->second, (coeff_b + coeff_c)));
+
+        system_rhs(cell.id_) +=  coeff_c*old_Pcap_solution(cell.id_);            
+        system_rhs(cell.id_) += -coeff_c*old_Pcap_solution(it->second);            
+
       }
 
     }
 
     // Volume contribution
     system_rhs(cell.id_) += 0*Area;
+
+
+    // if (cell.id_ == 1*LINE_CELL_NUMBER + 1)
+    // {
+    //   double Q = 8e-7;
+    //   system_rhs(cell.id_) += -Q*Area;
+    // }
+
+
+    if (cell.id_ == 685)
+    {
+      double Q = 8e-7;
+      system_rhs(cell.id_) += -Q*Area;
+    }
+
   }
 
   // This is a very efficient way of assembling the matrix A. The function is provided by the external library Eigen.
@@ -112,33 +175,38 @@ void ProblemVertical::solve_Pb()
   SparseLU<SparseMatrix<double>>   solver;
   solver.analyzePattern(system_matrix); 
   solver.factorize(system_matrix); 
-  new_p_solution = solver.solve(system_rhs); 
+  new_Pb_solution = solver.solve(system_rhs); 
 
-  // cout << MatrixXd(system_matrix) << endl;
+  // cout << setprecision(8) << setfill(' ') << MatrixXd(system_matrix) << endl << endl;
   // cout << new_p_solution << endl;
-  // cout << system_rhs << endl;
+  // cout << "rhs is " << endl << setprecision(4) << system_rhs << endl << endl;
   // cout << new_p_solution.maxCoeff() << endl;
 
-  old_p_solution = new_p_solution;
+
 
 }
+
+
+
 
 void ProblemVertical::compute_Pc()
 {
+  helper_vertical_ptr->get_Pc(new_Pc_solution, new_Pb_solution, old_Pcap_solution);
+
+
+  // cout << "Pb is " <<  endl << setprecision(10) << new_Pb_solution   << endl << endl;
+  // cout << "Pcap is" << endl << setprecision(10) << new_Pcap_solution << endl << endl;
+  // cout << "Pc is" <<   endl << setprecision(10) << new_Pc_solution   << endl << endl;
 
 }
+
+
+
 
 void ProblemVertical::compute_Sc()
 {
 
-}
-
-
-
-void ProblemVertical::compute_Sb()
-{
-
-  new_S_solution.setZero();
+  new_Sc_solution.setZero();
 
   for (int id = 0; id < CELL_NUMBER; ++id)
   {
@@ -148,42 +216,92 @@ void ProblemVertical::compute_Sb()
     {
 
       double K_component = helper_vertical_ptr->compute_K(cell, it->first);
-      double saturation = helper_vertical_ptr->get_saturation(cell, it->first, old_p_solution, old_S_solution);
-      double mobility = helper_vertical_ptr->get_mobility(saturation);
-      double fraction = helper_vertical_ptr->get_fraction(saturation);
+
+      double saturation = helper_vertical_ptr->get_saturation(cell, it->first, old_Sc_solution, old_Pb_solution, old_Pc_solution, old_Pcap_solution);
+
+      double coeff_c = helper_vertical_ptr->get_coeff_c(saturation);
 
       double wind;
 
       // Face contribution
       if (it->second == OUTSIDE_CELL_ID)
-        wind = (helper_vertical_ptr->get_boundary_value_p(cell, it->first) - old_p_solution(cell.id_))/(H/2.);
+      {
+        double Pc_ghost_value = helper_vertical_ptr->get_ghost_value_Pc(cell, it->first, new_Pb_solution, new_Pcap_solution);
+        double Pc_self_value = new_Pc_solution(cell.id_);
+        wind = (Pc_ghost_value - Pc_self_value)/H;
+      }
       else
-        wind = (old_p_solution(it->second) - old_p_solution(cell.id_))/H;
+      {        
+        double Pc_neighbor_value = new_Pc_solution(it->second);
+        double Pc_self_value = new_Pc_solution(cell.id_);
+        wind = (Pc_neighbor_value - Pc_self_value)/H;
+      }
 
-      new_S_solution(cell.id_) += fraction*mobility*K_component*wind*H*DELTA_T/Area; 
+      new_Sc_solution(cell.id_) += coeff_c*wind*H*DELTA_T/Area/coarse_porosity; 
 
     }
 
     // Volume contribution
-    new_S_solution(cell.id_) += old_S_solution(cell.id_);
+    new_Sc_solution(cell.id_) += old_Sc_solution(cell.id_);
+
+    // if (cell.id_ == 1*LINE_CELL_NUMBER + 1)
+    // {
+    //   double Q = 8e-7;
+    //   new_Sc_solution(cell.id_) += DELTA_T*Q/coarse_porosity;
+    // }
+
+    if (cell.id_ == 685)
+    {
+      double Q = 8e-7;
+      new_Sc_solution(cell.id_) += DELTA_T*Q/coarse_porosity;
+    }
 
 
   }
-  old_S_solution = new_S_solution;
 
+
+  // cout << setprecision(10) << new_Sc_solution  << endl << endl;
+
+}
+
+
+
+void ProblemVertical::compute_Sb()
+{
+  helper_vertical_ptr->get_Sb(new_Sb_solution, new_Sc_solution);
+}
+
+
+void ProblemVertical::compute_Pcap()
+{
+  helper_vertical_ptr->get_Pcap(new_Pcap_solution, new_Sc_solution);
+}
+
+
+void ProblemVertical::update()
+{
+  old_Sb_solution   = new_Sb_solution;
+  old_Sc_solution   = new_Sc_solution;
+  old_Pb_solution   = new_Pb_solution;  
+  old_Pc_solution   = new_Pc_solution;
+  old_Pcap_solution = new_Pcap_solution; 
 }
 
 
 void ProblemVertical::output_results(int cycle)
 {
 
+  string Pc_name = "Pc";
+  string Sc_name = "Sc";
+  string Pb_name = "Pb";
+  string Sb_name = "Sb";
 
-  string p_name = "p";
-  string S_name = "S";
   OutputManager output_manager(cycle);
 
-  output_manager.scalar_output(old_p_solution, p_name);
-  output_manager.scalar_output(new_S_solution, S_name);  
+  output_manager.scalar_output(new_Pc_solution, Pc_name);
+  output_manager.scalar_output(new_Sc_solution, Sc_name);  
+  output_manager.scalar_output(new_Pb_solution, Pb_name);
+  output_manager.scalar_output(new_Sb_solution, Sb_name);  
 
  
 }
@@ -193,6 +311,11 @@ void ProblemVertical::output_results(int cycle)
 void ProblemVertical::post_processing()
 {
 
+  for (int i = 0; i < CELL_NUMBER; ++i)
+  {
+    assert(("Bug! Saturation is not in a correct range.", old_Sc_solution(i) < 2 && old_Sc_solution(i) > -1));
+  }
+
 }
 
 
@@ -200,3 +323,7 @@ ProblemVertical::~ProblemVertical()
 {
   delete helper_vertical_ptr;
 }
+
+
+
+

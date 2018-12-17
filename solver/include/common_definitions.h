@@ -64,7 +64,7 @@ const int OUTSIDE_CELL_ID = -1;
 
 /* {X_1} is the lower left point while {X_2} is the upper right point of the physical domain  */
 const vec X_1{0, 0};
-const vec X_2{1, 1};
+const vec X_2{1000, 1000};
 
 /* Cell size */
 const double H = (X_2[0] - X_1[0])/LINE_CELL_NUMBER;
@@ -78,10 +78,46 @@ const int CELL_TYPE = 9;
 /* For generating random permeability tensor */
 const int RONDOM_N = 1000;
 
-const double DELTA_T = 0.0005;
+const double DELTA_T = 8640;
 
 /* {WEST} = 0, {EAST} = 1, {SOUTH} = 2, {NORTH} = 3, {NUMBER_DIRECTIONS} = 4 */
 enum DIRECTION {WEST, EAST, SOUTH, NORTH, NUMBER_DIRECTIONS};
 
+
+
+
+const double mu_c = 4.25e-5;
+
+const double mu_b = 3e-4;
+
+const double grav = 9.8;
+
+const double rho_c = 710; 
+
+const double rho_b = 1000;
+
+const double rg_c = rho_c * grav;
+
+const double rg_b = rho_b * grav;
+
+const double sb_res = 0;
+
+const double krc_star = 1;
+
+const double formation_thickness = 50; 
+
+const double porosity = 0.03; 
+
+const double coarse_porosity = porosity*formation_thickness;
+
+const double Pcap_entry = 0; 
+
+const double Lz = 50.;
+
+const double K = 1e-12*Lz;
+
+const double Nz = 100.;
+
+const double dz = Lz/Nz;
 
 #endif

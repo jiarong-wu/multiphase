@@ -8,33 +8,43 @@ class HelperVertical: public Helper
 {
   public:
     
-    void interpolate(VectorXd &solution /* To do: There should be a function pointer as another argument here */);
 
-    void interpolate_S(VectorXd &solution /* This function is a rubbish version. Got to be deleted and replaced. */);
+    void initial_condition_Sc(VectorXd &old_Sc_solution);
 
-    void interpolate_p(VectorXd &solution /* This function is a rubbish version. Got to be deleted and replaced. */);
+    void initial_condition_Sb(VectorXd &old_Sb_solution, VectorXd &old_Sc_solution);
+
+    void initial_condition_Pb(VectorXd &old_Pb_solution);
+
+    void initial_condition_Pcap(VectorXd &Pcap_solution,  VectorXd &old_Sc_solution);
+
+    void initial_condition_Pc(VectorXd &old_Pc_solution, VectorXd &old_Pb_solution, VectorXd &Pcap_solution);
+
+    void get_Pcap(VectorXd &Pcap_solution, VectorXd &old_Sc_solution);
+
+    void get_Pc(VectorXd &new_Pc_solution, VectorXd &new_Pb_solution, VectorXd &Pcap_solution);
+
+    void get_Sb(VectorXd &old_Sb_solution, VectorXd &old_Sc_solution);
 
     double compute_K(Cell &cell, DIRECTION direction);
 
-    double get_mobility(double S);
+    bool determine_upwind(Cell &cell, DIRECTION direction, VectorXd &Pb_solution, VectorXd &Pc_solution, VectorXd &Pcap_solution);
 
-    double get_fraction(double S);
-
-    bool determine_upwind(Cell &cell, DIRECTION direction, VectorXd &p_solution);
-
-    double get_saturation(Cell &cell, DIRECTION direction, VectorXd &p_solution, VectorXd &S_solution);
-
-    double get_boundary_value_p(Cell &cell, DIRECTION direction);
-
-    double get_boundary_value_S(Cell &cell, DIRECTION direction);
-
-    double boundary_function_p(vec &point);
+    double get_saturation(Cell &cell, DIRECTION direction, VectorXd &Sc_solution, 
+                          VectorXd &Pb_solution, VectorXd &Pc_solution, VectorXd &Pcap_solution);
   
-    double boundary_function_S(vec &point);
+    double get_coeff_b(double Sc);
+ 
+    double get_coeff_c(double Sc);
 
+    double boundary_function_Pb(vec &point);
 
+    double get_ghost_value_Pb(Cell &cell, DIRECTION direction, VectorXd &Pb_solution);
 
+    double get_ghost_value_Pcap(Cell &cell, DIRECTION direction, VectorXd &Pcap_solution);
 
+    double get_ghost_value_Pc(Cell &cell, DIRECTION direction, VectorXd &Pb_solution, VectorXd &Pcap_solution);
+
+    double get_boundary_value_Pb(Cell &cell, DIRECTION direction);
 
 };
 
