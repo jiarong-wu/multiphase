@@ -35,7 +35,7 @@ void ProblemVE::run()
 
   cout << "Total number of dofs is " << CELL_NUMBER << endl;
 
-  for (int i = 0; i < 50; ++i)
+  for (int i = 0; i < 1; ++i)
   {
 
     time += DELTA_T;
