@@ -14,13 +14,13 @@ INC = $(wildcard $(INC_DIR)/*.h)
 
 OUT = $(wildcard $(OUT_DIR)/*.vtk)
 
-CFLAGS = -I$(INC_DIR) -I$(LIB_DIR)
+CFLAGS = -I$(INC_DIR) -I$(LIB_DIR) -pg
 
 run: $(EXE)
 	./$(EXE)
 
 $(EXE): $(OBJ) 
-	$(CC) $^  -o $@
+	$(CC) $(CFLAGS) $^  -o $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(INC)
 	$(CC) $(CFLAGS) -c $< -o $@
