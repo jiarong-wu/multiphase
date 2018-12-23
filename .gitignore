@@ -1,5 +1,5 @@
-solver/output/*
-solver/object/*
+solver/output/*.vtk
+solver/object/*.o
 solver/Flow
 eigen/*
 *.vtk
