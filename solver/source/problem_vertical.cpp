@@ -36,7 +36,7 @@ void ProblemVertical::run()
 
   cout << "Total number of dofs is " << CELL_NUMBER << endl;
 
-  for (int i = 0; i < 500; ++i)
+  for (int i = 0; i < 50; ++i)
   {
 
     time += DELTA_T;
@@ -47,7 +47,7 @@ void ProblemVertical::run()
 
     cout << "This is time step " << i << endl;
     run_one_step();
-    if (i%10 == 0)
+    if ((i + 1)%10 == 0)
     {
       output_results(i/10);
     }
@@ -147,14 +147,14 @@ void ProblemVertical::assemble_system_Pb()
 
     // if (cell.id_ == 1*LINE_CELL_NUMBER + 1)
     // {
-    //   double Q = 8e-7;
+    //   double Q = 0.05/Area;
     //   system_rhs(cell.id_) += -Q*Area;
     // }
 
 
     if (cell.id_ == 685)
     {
-      double Q = 8e-7;
+      double Q = 0.05/Area;
       system_rhs(cell.id_) += -Q*Area;
     }
 
@@ -246,13 +246,13 @@ void ProblemVertical::compute_Sc()
 
     // if (cell.id_ == 1*LINE_CELL_NUMBER + 1)
     // {
-    //   double Q = 8e-7;
+    //   double Q = 0.05/Area;
     //   new_Sc_solution(cell.id_) += DELTA_T*Q/coarse_porosity;
     // }
 
     if (cell.id_ == 685)
     {
-      double Q = 8e-7;
+      double Q = 0.05/Area;
       new_Sc_solution(cell.id_) += DELTA_T*Q/coarse_porosity;
     }
 
