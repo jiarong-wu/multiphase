@@ -59,7 +59,7 @@ void ProblemPoisson::assemble_system()
     }
     // Volume contribution
     double rhs_f = helper_poisson_ptr->rhs_function(cell.cell_center_);
-    b(cell.id_) += -rhs_f*Area;
+    b(cell.id_) += -rhs_f*Area;   
   }
 
   // To do: Jiarong -> You may want to change the following "assert" into an execption "try-catch" in the test code

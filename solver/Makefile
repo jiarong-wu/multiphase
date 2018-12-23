@@ -6,20 +6,21 @@ SRC_DIR = source
 OBJ_DIR = object
 INC_DIR = include
 LIB_DIR = ../eigen
-OUT_DIR = outputSRC = $(wildcard $(SRC_DIR)/*.cpp)
+OUT_DIR = output
+
+SRC = $(wildcard $(SRC_DIR)/*.cpp)
 OBJ = $(SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 INC = $(wildcard $(INC_DIR)/*.h)
 
 OUT = $(wildcard $(OUT_DIR)/*.vtk)
 
-
-CFLAGS = -I$(INC_DIR) -I$(LIB_DIR) -pg
+CFLAGS = -I$(INC_DIR) -I$(LIB_DIR)
 
 run: $(EXE)
 	./$(EXE)
 
 $(EXE): $(OBJ) 
-	$(CC) $(CFLAGS) $^  -o $@
+	$(CC) $^  -o $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(INC)
 	$(CC) $(CFLAGS) -c $< -o $@

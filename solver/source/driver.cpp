@@ -54,14 +54,14 @@ variable "a" in the actual code.
 int main()
 {
 
-  // ProblemPoisson poisson;
-  // poisson.run();
+  ProblemPoisson poisson;
+  poisson.run();
   
   // ProblemFlow two_phase_flow;
   // two_phase_flow.run();
   
-  ProblemVertical VE_model;
-  VE_model.run();
+  // ProblemVertical VE_model;
+  // VE_model.run();
  
   
   return 0;

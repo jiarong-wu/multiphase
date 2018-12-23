@@ -32,7 +32,7 @@ typedef vector<int> int_vec;
 
 /* How many times we want to refine the mesh.
    For each time, one square cell is divided into four. */
-const int DIVISION = 5;
+const int DIVISION = 6;
 
 /* Total number of elements*/
 const int CELL_NUMBER = pow(4, DIVISION);
@@ -62,9 +62,15 @@ const int VERTICES_PER_LINE = 2;
 /* Use -1 to represent a ``cell'' that is out of the boundary */
 const int OUTSIDE_CELL_ID = -1;
 
+//  {X_1} is the lower left point while {X_2} is the upper right point of the physical domain  
+// const vec X_1{0, 0};
+// const vec X_2{1000, 1000};
+
 /* {X_1} is the lower left point while {X_2} is the upper right point of the physical domain  */
 const vec X_1{0, 0};
-const vec X_2{1000, 1000};
+const vec X_2{1, 1};
+
+
 
 /* Cell size */
 const double H = (X_2[0] - X_1[0])/LINE_CELL_NUMBER;
