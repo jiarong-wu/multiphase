@@ -14,7 +14,7 @@ INC = $(wildcard $(INC_DIR)/*.h)
 
 OUT = $(wildcard $(OUT_DIR)/*.vtk)
 
-CFLAGS = -I$(INC_DIR) -I$(LIB_DIR)
+CFLAGS = -std=c++11 -I$(INC_DIR) -I$(LIB_DIR) -pg
 
 run: $(EXE)
 	./$(EXE)
