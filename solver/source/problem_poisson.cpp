@@ -5,7 +5,7 @@ ProblemPoisson::ProblemPoisson()
 :
 x(CELL_NUMBER),
 b(CELL_NUMBER),
-A(CELL_NUMBER, CELL_NUMBER)
+A(CELL_NUMBER, CELL_NUMBER),
 {
   helper_poisson_ptr = new HelperPoisson;
 }

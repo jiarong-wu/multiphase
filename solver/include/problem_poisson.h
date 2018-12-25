@@ -24,7 +24,6 @@ class ProblemPoisson : public Problem
 
     HelperPoisson* helper_poisson_ptr;
 
-
     void pre_processing();
     void assemble_system();
     void solve();
