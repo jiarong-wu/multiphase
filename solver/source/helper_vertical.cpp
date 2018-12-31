@@ -1,10 +1,5 @@
  #include "helper_vertical.h"
 
-
-
-
-
-
 void HelperVertical::initial_condition_Sc(VectorXd &old_Sc_solution /* This function is a rubbish version. Got to be deleted and replaced. */)
 {
   for (int i = 0; i < old_Sc_solution.size(); ++i)
