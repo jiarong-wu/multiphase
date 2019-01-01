@@ -20,6 +20,11 @@ class Cell
 		*/
 		int id_;
 
+		/** Info for adaptation */
+		int id_source_;
+		double x_source_;
+		double y_source_;
+
     // To do: Build specific structures for things like "points" and "tensors"
 
 		/** One cell has four vertices. {vertices} are their coordinates. */
@@ -36,6 +41,7 @@ class Cell
 
 		/** Constructor */
 		Cell(int id);
+		Cell(int id, int id_source, double x_source, double y_source);
 
 		/** Initialize {vertices_} */
 		void ini_coordinates();		

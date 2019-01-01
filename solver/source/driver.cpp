@@ -62,7 +62,7 @@ variable "a" in the actual code.
 int main()
 {
 
-  ProblemPoisson poisson;
+  ProblemPoisson poisson(CELL_NUMBER, 1);
   poisson.run();
   
   // ProblemFlow two_phase_flow;

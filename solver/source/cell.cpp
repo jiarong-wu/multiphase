@@ -10,10 +10,69 @@ Cell::Cell(int id)
   ini_neighbours();
 }
 
+Cell::Cell(int id, int id_source, double x_source, double y_source)
+: 
+id_(id), 
+id_source_(id_source),
+x_source_(x_source),
+y_source_(y_source)
+{
+  // id_source is not a member of cell; it's above cell. Would it work?
+  ad_coordinates();
+  ini_neighbours();
+}
+
 void Cell::ini_coordinates()
 {
   int index_1 = id_%LINE_CELL_NUMBER;
   int index_2 = id_/LINE_CELL_NUMBER;
+  double step_x = (X_2[0] - X_1[0])/LINE_CELL_NUMBER;
+  double step_y = (X_2[1] - X_1[1])/LINE_CELL_NUMBER;
+
+  vec x_lower_left{X_1[0]+step_x*index_1, X_1[1]+step_y*index_2};
+
+  for (int i = 0; i < VERTICES_PER_LINE; ++i)
+  {
+    for (int j = 0; j < VERTICES_PER_LINE; ++j)
+    {
+      vec v;
+      v.push_back(x_lower_left[0] + step_x*j);
+      v.push_back(x_lower_left[1] + step_y*i);
+      vertices_.push_back(v);
+    }
+  }
+  cell_center_.push_back(x_lower_left[0] + step_x/2);
+  cell_center_.push_back(x_lower_left[1] + step_y/2);
+
+
+  // Rubbish code, needed to be changed
+  vec v_west;
+  v_west.push_back(cell_center_[0] - step_x/2);
+  v_west.push_back(cell_center_[1]);  
+  face_centers_[WEST] = v_west;
+
+  vec v_east;
+  v_east.push_back(cell_center_[0] + step_x/2);
+  v_east.push_back(cell_center_[1]);  
+  face_centers_[EAST] = v_east;
+
+  vec v_south;
+  v_south.push_back(cell_center_[0]);
+  v_south.push_back(cell_center_[1] - step_y/2);  
+  face_centers_[SOUTH] = v_south;
+
+  vec v_north;
+  v_north.push_back(cell_center_[0]);
+  v_north.push_back(cell_center_[1] + step_y/2);  
+  face_centers_[NORTH] = v_north;    
+}
+
+void Cell::ad_coordinates()   // Should I write id_source_ or id_source?
+{
+  int index_1 = id_%LINE_CELL_NUMBER;
+  int index_2 = id_/LINE_CELL_NUMBER;
+  int index_1_source = id_source_%LINE_CELL_NUMBER;
+  int index_2_source = id_source_/LINE_CELL_NUMBER;
   double step_x = (X_2[0] - X_1[0])/LINE_CELL_NUMBER;
   double step_y = (X_2[1] - X_1[1])/LINE_CELL_NUMBER;
 
