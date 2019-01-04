@@ -4,7 +4,6 @@
 #include "common_definitions.h"
 #include "helper.h"
 
-
 class HelperPoisson: public Helper
 {
   public:

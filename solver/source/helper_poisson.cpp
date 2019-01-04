@@ -9,23 +9,14 @@ double HelperPoisson::get_boundary_value_x(Cell &cell, DIRECTION direction)
 }
 
 
-double HelperPoisson::boundary_function_x1(vec &point)
+double HelperPoisson::boundary_function_x(vec &point)
 {
   return sin(2*M_PI*(point[0] + point[1]));
 }
 
-double HelperPoisson::rhs_function1(vec &point)
+double HelperPoisson::rhs_function(vec &point)
 {
   // Mannualy set the rhs function so that the home made analytical solution is satisfied in the poisson equation
   return 8*pow(M_PI, 2)*sin(2*M_PI*(point[0] + point[1]));
 }
 
-double HelperPoisson::boundary_function_x2(vec &point)
-{
-  // How to implement a zero flux condition?
-}
-
-double HelperPoisson::rhs_function2(vec &point)
-{
-  return 1;
-}

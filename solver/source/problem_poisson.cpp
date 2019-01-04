@@ -1,4 +1,7 @@
 #include "problem_poisson.h"
+#include "helper_poisson.h"
+#include "helper_adapt.h"
+#include "cell.h"
 
 // The default constructor
 ProblemPoisson::ProblemPoisson()
@@ -7,7 +10,7 @@ x(CELL_NUMBER),
 b(CELL_NUMBER),
 A(CELL_NUMBER, CELL_NUMBER)
 {
-  helper_poisson_ptr = new HelperPoisson;
+  HelperPoisson helper_poisson();
 }
 
 // Another constructor that passes in flags
@@ -20,12 +23,13 @@ x_source_(X_SOURCE),
 y_source_(Y_SOURCE),
 AdaptFlag_(AdaptFlag)
 {
-  helper_poisson_ptr = new HelperPoisson;
-  helper_adapt_ptr = new HelperAdapt;
+  HelperPoisson helper_poisson();
+  HelperAdapt helper_adapt();
 }
 
 void ProblemPoisson::run()
 {
+  
   pre_processing();
   assemble_system();
   solve();
@@ -42,7 +46,7 @@ void ProblemPoisson::assemble_system()
 {
   // Iterate over cells to first: find source
   // Should add "if given the source coordinate"
-  id_source_ = helper_adapt_ptr->find_source(x_source_, y_source_);
+  id_source_ = helper_adapt.find_source(x_source_, y_source_);
   // Iterate over cells to assemble the system
   for (int id = 0; id < CELL_NUMBER; ++id)
   {
@@ -59,7 +63,7 @@ void ProblemPoisson::assemble_system()
       if (it->second == OUTSIDE_CELL_ID)
       {
         triplet_list.push_back(T(cell.id_, cell.id_, -2));
-        double x_boundary_value = helper_poisson_ptr->get_boundary_value_x(cell, it->first);
+        double x_boundary_value = helper_poisson.get_boundary_value_x(cell, it->first);
         b(cell.id_) += -2*x_boundary_value;
       }
       else
@@ -69,7 +73,7 @@ void ProblemPoisson::assemble_system()
       }
     }
     // Volume contribution
-    double rhs_f = helper_poisson_ptr->rhs_function(cell.cell_center_);
+    double rhs_f = helper_poisson.rhs_function(cell.cell_center_);
     b(cell.id_) += -rhs_f*Area;   
     // This is a very efficient way of assembling the matrix A. The function is provided by the external library Eigen.
     A.setFromTriplets(triplet_list.begin(), triplet_list.end());
@@ -123,6 +127,5 @@ void ProblemPoisson::post_processing()
 
 ProblemPoisson::~ProblemPoisson()
 {
-  delete helper_poisson_ptr;
-  delete helper_adapt_ptr;
+
 }

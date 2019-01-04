@@ -25,6 +25,7 @@ class Cell
 		double x_source_;
 		double y_source_;
 
+
     // To do: Build specific structures for things like "points" and "tensors"
 
 		/** One cell has four vertices. {vertices} are their coordinates. */

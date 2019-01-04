@@ -5,11 +5,12 @@
 #include "cell.h"
 #include "output_manager.h"
 #include "problem.h"
+#include "helper_adapt.h"
 #include "helper_poisson.h"
+
 
 class ProblemPoisson : public Problem 
 {
-	public:
 
     /* Constructor. */
     ProblemPoisson(); 
@@ -32,6 +33,7 @@ class ProblemPoisson : public Problem
     int id_source_ = -1;
 
     HelperPoisson* helper_poisson_ptr;
+    Helper* helper_adapt_ptr;
 
     void pre_processing();
     void assemble_system();
