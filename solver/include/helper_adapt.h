@@ -6,9 +6,9 @@
 
 class HelperAdapt: public Helper
 {
-  public:
- 	
+  public: 	
     int find_source(double x_position, double y_position);
+	vec compute_step(int index, int index_source, double distance, double REFINE_FACTOR);
 
 };
 

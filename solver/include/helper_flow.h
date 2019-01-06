@@ -3,6 +3,7 @@
 
 #include "common_definitions.h"
 #include "helper.h"
+#include "cell.h"
 
 class HelperFlow: public Helper
 {

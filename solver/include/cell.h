@@ -3,6 +3,7 @@
 #define CELL_H
 
 #include "common_definitions.h"
+#include "helper_adapt.h"
 
 class Cell
 {	
@@ -34,6 +35,9 @@ class Cell
     	/** cell centor coordinates */
     	vec cell_center_;
 
+    	/** cell size, namely H_x, H_y */
+    	// vec H_;
+
     	/** Store face center coordinates */
     	map<DIRECTION, vec> face_centers_;
 
@@ -51,7 +55,8 @@ class Cell
 		/** Initialize {neighbour_ids_} */
 		void ini_neighbours();	
 
-
+	private:
+		HelperAdapt helper_adapt;
 };
 
 
