@@ -1,6 +1,10 @@
  #include "helper_poisson.h"
 
-
+/*!
+ * \brief This is the brief
+ * \param This is the paramter
+ * \details These are the details
+ */
 double HelperPoisson::get_boundary_value_x(Cell &cell, DIRECTION direction)
 {
   assert(("Bug! This face should be a boundary face but it is not!", cell.neighbour_ids_[direction] == OUTSIDE_CELL_ID));

@@ -9,8 +9,8 @@ class HelperPoisson: public Helper
 {
   public:
     
-    double get_boundary_value_x(Cell &cell, DIRECTION direction);
-    double boundary_function_x(vec &point);
+    double get_boundary_value_x(Cell &cell, DIRECTION direction); //!< This is a test in header
+    double boundary_function_x(vec &point); ///< This is a test in header
     double rhs_function(vec &point);
 
 };
