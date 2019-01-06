@@ -120,7 +120,9 @@ const double Pcap_entry = 0;
 
 const double Lz = 50.;
 
-const double K = 1e-12*Lz;
+const double k = 1e-12; 
+
+const double K = k*Lz;
 
 const double Nz = 100.;
 
