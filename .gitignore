@@ -8,3 +8,4 @@ eigen/*
 googletest/*
 *.o
 doc/*
+solver/output/*
