@@ -6,13 +6,15 @@ SRC_DIR = source
 OBJ_DIR = object
 INC_DIR = include
 LIB_DIR = ../eigen
-OUT_DIR = output
+OUT_DIR_SOL = output/solutions
+OUT_DIR_ANA = output/analysis
 
 SRC = $(wildcard $(SRC_DIR)/*.cpp)
 OBJ = $(SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 INC = $(wildcard $(INC_DIR)/*.h)
 
-OUT = $(wildcard $(OUT_DIR)/*.vtk)
+OUT_SOL = $(wildcard $(OUT_DIR_SOL)/*.vtk)
+OUT_ANA = $(wildcard $(OUT_DIR_ANA)/*.out)
 
 CFLAGS = -I$(INC_DIR) -I$(LIB_DIR)
 
@@ -28,4 +30,4 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(INC)
 .PHONY: clean	
 
 clean:
-	rm $(EXE) $(OBJ) $(OUT)
+	rm $(EXE) $(OBJ) $(OUT_SOL) $(OUT_ANA)

@@ -7,6 +7,8 @@
 #include "problem.h"
 #include "helper_vertical.h"
 
+using namespace VerticalModel;
+
 class ProblemVertical : public Problem
 {
 	public:
@@ -18,9 +20,6 @@ class ProblemVertical : public Problem
     	
 	private:
          
-    // VectorXd new_p_solution, new_S_solution,  old_p_solution, old_S_solution, system_rhs, flag_vector;
-    // SparseMatrix<double> system_matrix;
-    // vector<T> triplet_list;
 
     VectorXd new_Pc_solution, new_Sc_solution, old_Pc_solution, old_Sc_solution, 
              new_Pb_solution, new_Sb_solution, old_Pb_solution, old_Sb_solution, 
@@ -58,6 +57,7 @@ class ProblemVertical : public Problem
     void update();
     void output_results(int cycle);	
     void post_processing();
+    void compare_with_analytical_solution();
 
 
 };

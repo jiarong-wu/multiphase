@@ -12,7 +12,7 @@ void OutputManager::scalar_output(VectorXd &x, const string &name)
 {
 
 
-  string s_1 = "output/";
+  string s_1 = "output/solutions/";
   string s_2 = "-";
   string s_3 = ".vtk";
   stringstream ss_filename;

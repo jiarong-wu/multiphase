@@ -4,6 +4,8 @@
 
 #include "common_definitions.h"
 
+using namespace CellModel;
+
 class Cell
 {	
 	public:
@@ -25,7 +27,7 @@ class Cell
 		/** One cell has four vertices. {vertices} are their coordinates. */
 		matrix vertices_;
 
-    /** cell centor coordinates */
+    /** cell center coordinates */
     vec cell_center_;
 
     /** Store face center coordinates */

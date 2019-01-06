@@ -4,6 +4,7 @@
 #include "common_definitions.h"
 #include "helper.h"
 
+using namespace PoissonModel;
 
 class HelperPoisson: public Helper
 {

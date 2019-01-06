@@ -21,7 +21,7 @@ flag_vector(CELL_NUMBER),
 system_matrix(CELL_NUMBER, CELL_NUMBER),
 time(0),
 InjWell(685),
-ProWell(500),
+ProWell(528),
 Qc_int(0.0/Area),
 Qb_int(0.0/Area),
 Qc_ext(0.0/Area),
@@ -42,7 +42,7 @@ void ProblemVertical::run()
 
   cout << "Total number of dofs is " << CELL_NUMBER << endl;
 
-  for (int i = 0; i < 100; ++i)
+  for (int i = 0; i < 20; ++i)
   {
 
     time += DELTA_T;
@@ -62,6 +62,8 @@ void ProblemVertical::run()
   }
 
   post_processing();
+  compare_with_analytical_solution();
+
 }
 
 
@@ -170,15 +172,7 @@ void ProblemVertical::assemble_system_Pb()
       system_rhs(cell.id_) += Qb_ext*Area; 
     }
 
-    // compare with the analytical solution (Thiem Eqn) after several time steps
-    /* from the model output: 
-       head = dz/2 + Pb/rg_b; 
-       radius = ; 
 
-       from the Thiem Equation: 
-       transmissivity = k*rg_b/mu_b*Lz;   
-       radius = ; 
-       head = Lz - (-Qb_est*Area)/2/pi/transmissivity*ln(r/(Lx/2)); */
 
     
   }
@@ -337,6 +331,65 @@ void ProblemVertical::post_processing()
   {
     assert(("Bug! Saturation is not in a correct range.", old_Sc_solution(i) < 2 && old_Sc_solution(i) > -1));
   }
+
+}
+
+
+
+void ProblemVertical::compare_with_analytical_solution()
+{
+
+
+    // // compare with the analytical solution (Thiem Eqn) after several time steps
+    //  from the model output: 
+    //    head = dz/2 + Pb/rg_b; 
+    //    radius = ; 
+
+    //    from the Thiem Equation: 
+    //    transmissivity = k*rg_b/mu_b*Lz;   
+    //    radius = ; 
+    //    head = Lz - (-Qb_est*Area)/2/pi/transmissivity*ln(r/(Lx/2)); 
+
+
+
+  int start_index = 528;
+  int end_index = 543;
+
+  Cell cell_start(start_index);
+  double r_start = cell_start.cell_center_[0];
+  double shift_r = 1;
+
+  ofstream r_file;
+  r_file.open ("output/analysis/r.out");
+  ofstream numerical_file;
+  numerical_file.open ("output/analysis/numerical.out");
+  ofstream analytical_file;
+  analytical_file.open ("output/analysis/analytical.out");
+
+  for (int i = start_index; i < end_index + 1; ++i)
+  {
+    Cell cell(i);
+    double r = cell.cell_center_[0] - r_start + shift_r;
+    r_file << r << "\n";
+  }  
+
+  for (int i = start_index; i < end_index + 1; ++i)
+  {
+    numerical_file << dz/2 + new_Pb_solution[i]/rg_b << "\n";
+  }
+
+  for (int i = start_index; i < end_index + 1; ++i)
+  {
+    Cell cell(i);
+    double r = cell.cell_center_[0] - r_start + shift_r;
+    double transmissivity = k*rg_b/mu_b*Lz; 
+    analytical_file << Lz - (-Qb_ext*Area)/2/M_PI/transmissivity*log(r/(Lx/2)) << "\n";
+  }  
+
+  r_file.close();  
+  numerical_file.close();
+  analytical_file.close();
+
 
 }
 

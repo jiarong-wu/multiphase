@@ -4,6 +4,9 @@
 #include "common_definitions.h"
 #include "helper.h"
 
+using namespace VerticalModel;
+
+
 class HelperVertical: public Helper
 {
   public:

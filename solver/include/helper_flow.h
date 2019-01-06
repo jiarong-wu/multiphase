@@ -4,6 +4,8 @@
 #include "common_definitions.h"
 #include "helper.h"
 
+using namespace FlowModel;
+
 class HelperFlow: public Helper
 {
   public:
