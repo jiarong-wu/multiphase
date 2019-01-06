@@ -1,4 +1,4 @@
- #include "cell.h"
+#include "cell.h"
 
 Cell::Cell(int id)
 {
@@ -66,8 +66,6 @@ void Cell::ini_coordinates()
   face_centers_[NORTH] = v_north;    
 }
 
-
-
 void Cell::ad_coordinates()   
 {
   int index_1 = id_%LINE_CELL_NUMBER;
@@ -82,7 +80,7 @@ void Cell::ad_coordinates()
 
   // Calculate x coordinate
   double denominator = 0;
-  vec x_step<double>;
+  vec x_step;
   // To make reuse of code easier, pass index & index_source to m & m0,
   // x0 is the center cell x_step as well as the boundary cell x_step
   int m0,m;
@@ -100,12 +98,12 @@ void Cell::ad_coordinates()
       for (int i=0; i < m0/2; ++i)
         denominator += 2*pow(REFINE_FACTOR, i);
       denominator += -0.5 + pow(REFINE_FACTOR, m0/2+1);
-      x0 = x_distance./denominator;
+      x0 = x_distance/denominator;
       // Calculating each cell width, put them in an array
       for (int i=0; i < m0; ++i)
       {
         int power = (m0 - 1)/2 - abs(m - (m0+1)/2);
-        x_step.pushback(pow(REFINE_FACTOR, power)*x0);
+        x_step.push_back(pow(REFINE_FACTOR, power)*x0);
       }
     }
     // If index_1_source_ is an even number 
@@ -114,20 +112,20 @@ void Cell::ad_coordinates()
       for (int i=0; i < m0/2; ++i)
         denominator += 2*pow(REFINE_FACTOR, i);
       denominator += -0.5;
-      x0 = x_distance./denominator;
+      x0 = x_distance/denominator;
       for (int i=0; i < m0; ++i)
       {
         int power = (m0/2 - 1 - abs(m - m0/2));
-        x_step.pushback(pow(REFINE_FACTOR, power)*x0);
+        x_step.push_back(pow(REFINE_FACTOR, power)*x0);
       }
     }
 
     // After getting x_step[m], computing the x coordinate
     double x_left = X_1[0];
-    for (i=0; i < m-1; ++i)
+    for (int i=0; i < m-1; ++i)
       x_left += x_step[i]; 
     double x_right = x_left + x_step[m-1];
-    cell_center_.push_back((x_left + x_right)./2);
+    cell_center_.push_back((x_left + x_right)/2.);
 
   }
   // If the current cell is on the right of the source cell
@@ -143,12 +141,12 @@ void Cell::ad_coordinates()
       for (int i=0; i < m0/2; ++i)
         denominator += 2*pow(REFINE_FACTOR, i);
       denominator += -0.5 + pow(REFINE_FACTOR, m0/2+1);
-      x0 = x_distance./denominator;
+      x0 = x_distance/denominator;
       // Calculating each cell width, put them in an array
       for (int i=0; i < m0; ++i)
       {
         int power = (m0 - 1)/2 - abs(m - (m0+1)/2);
-        x_step.pushback(pow(REFINE_FACTOR, power)*x0);
+        x_step.push_back(pow(REFINE_FACTOR, power)*x0);
       }
     }
     // If index_1_source_ is an even number 
@@ -157,20 +155,20 @@ void Cell::ad_coordinates()
       for (int i=0; i < m0/2; ++i)
         denominator += 2*pow(REFINE_FACTOR, i);
       denominator += -0.5;
-      x0 = x_distance./denominator;
+      x0 = x_distance/denominator;
       for (int i=0; i < m0; ++i)
       {
         int power = (m0/2 - 1 - abs(m - m0/2));
-        x_step.pushback(pow(REFINE_FACTOR, power)*x0);
+        x_step.push_back(pow(REFINE_FACTOR, power)*x0);
       }
     }
 
     // Don't forget that now we add from x_source_ instead of X_1[0]
     double x_left = x_source_;
-    for (i=0; i < m-1; ++i)
+    for (int i=0; i < m-1; ++i)
       x_left += x_step[i]; 
     double x_right = x_left + x_step[m-1];
-    cell_center_.push_back((x_left + x_right)./2);
+    cell_center_.push_back((x_left + x_right)/2.);
   }
 
   // If the current cell is the source cell
@@ -185,14 +183,14 @@ void Cell::ad_coordinates()
       for (int i=0; i < m0/2; ++i)
         denominator += 2*pow(REFINE_FACTOR, i);
       denominator += -0.5 + pow(REFINE_FACTOR, m0/2+1);
-      x0 = x_distance./denominator;
+      x0 = x_distance/denominator;
     }
     else
     {
       for (int i=0; i < m0/2; ++i)
         denominator += 2*pow(REFINE_FACTOR, i);
       denominator += -0.5;
-      x0 = x_distance./denominator;
+      x0 = x_distance/denominator;
     }
 
     cell_center_.push_back(x_source_);
@@ -201,16 +199,14 @@ void Cell::ad_coordinates()
   }
 
   // Calculating Y coordinate
-  double y0 = 0;
-  double denominator = 0;
-  vec y_step<double>;
+  vec y_step;
 
   int n0,n;
   double y0, y_distance;
 
   if (index_2 < index_2_source)
   {
-    y = index_2;
+    n = index_2;
     y0 = index_2_source;
     y_distance = y_source_ - X_1[1];
 
@@ -219,11 +215,11 @@ void Cell::ad_coordinates()
       for (int i=0; i < n0/2; ++i)
         denominator += 2*pow(REFINE_FACTOR, i);
       denominator += -0.5 + pow(REFINE_FACTOR, n0/2+1);
-      y0 = y_distance./denominator;
+      y0 = y_distance/denominator;
       for (int i=0; i < n0; ++i)
       {
         int power = (n0 - 1)/2 - abs(n - (n0+1)/2);
-        y_step.pushback(pow(REFINE_FACTOR, power)*y0);
+        y_step.push_back(pow(REFINE_FACTOR, power)*y0);
       }
     }
     else
@@ -231,19 +227,19 @@ void Cell::ad_coordinates()
       for (int i=0; i < n0/2; ++i)
         denominator += 2*pow(REFINE_FACTOR, i);
       denominator += -0.5;
-      y0 = y_distance./denominator;
+      y0 = y_distance/denominator;
       for (int i=0; i < n0; ++i)
       {
         int power = (n0/2 - 1 - abs(n - n0/2));
-        y_step.pushback(pow(REFINE_FACTOR, power)*y0);
+        y_step.push_back(pow(REFINE_FACTOR, power)*y0);
       }
     }
 
     double y_lower = X_1[1];
-    for (i=0; i < n-1; ++i)
+    for (int i=0; i < n-1; ++i)
       y_lower += y_step[i]; 
     double y_higher = y_lower + y_step[n-1];
-    cell_center_.push_back((y_lower + y_higher)./2);
+    cell_center_.push_back((y_lower + y_higher)/2.);
   }
 
   else if (index_2 > index_2_source)
@@ -257,12 +253,12 @@ void Cell::ad_coordinates()
       for (int i=0; i < n0/2; ++i)
         denominator += 2*pow(REFINE_FACTOR, i);
       denominator += -0.5 + pow(REFINE_FACTOR, n0/2+1);
-      y0 = y_distance./denominator;
+      y0 = y_distance/denominator;
       // Calculating each cell width, put them in an array
       for (int i=0; i < n0; ++i)
       {
         int power = (n0 - 1)/2 - abs(n - (n0+1)/2);
-        y_step.pushback(pow(REFINE_FACTOR, power)*y0);
+        y_step.push_back(pow(REFINE_FACTOR, power)*y0);
       }
     }
     // If index_1_source_ is an even number 
@@ -271,20 +267,20 @@ void Cell::ad_coordinates()
       for (int i=0; i < n0/2; ++i)
         denominator += 2*pow(REFINE_FACTOR, i);
       denominator += -0.5;
-      y0 = y_distance./denominator;
+      y0 = y_distance/denominator;
       for (int i=0; i < n0; ++i)
       {
         int power = (n0/2 - 1 - abs(n - n0/2));
-        y_step.pushback(pow(REFINE_FACTOR, power)*y0);
+        y_step.push_back(pow(REFINE_FACTOR, power)*y0);
       }
     }
 
     // Don't forget that now we add from x_source_ instead of X_1[0]
     double y_lower = y_source_;
-    for (i=0; i < n-1; ++i)
+    for (int i=0; i < n-1; ++i)
       y_lower += y_step[i]; 
     double y_higher = y_lower + y_step[n-1];
-    cell_center_.push_back((y_lower + y_higher)./2);
+    cell_center_.push_back((y_lower + y_higher)/2.);
   }
 
   // If the current cell is the source cell
@@ -299,14 +295,14 @@ void Cell::ad_coordinates()
       for (int i=0; i < n0/2; ++i)
         denominator += 2*pow(REFINE_FACTOR, i);
       denominator += -0.5 + pow(REFINE_FACTOR, n0/2+1);
-      y0 = y_distance./denominator;
+      y0 = y_distance/denominator;
     }
     else
     {
       for (int i=0; i < n0/2; ++i)
         denominator += 2*pow(REFINE_FACTOR, i);
       denominator += -0.5;
-      y0 = y_distance./denominator;
+      y0 = y_distance/denominator;
     }
 
     cell_center_.push_back(y_source_);

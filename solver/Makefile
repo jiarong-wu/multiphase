@@ -16,6 +16,9 @@ OUT = $(wildcard $(OUT_DIR)/*.vtk)
 
 CFLAGS = -I$(INC_DIR) -I$(LIB_DIR) -std=c++11
 
+# cell.o: $(SRC_DIR)/cell.cpp
+# 	$(CC) $(CFLAGS) -c $< -o $@
+
 run: $(EXE)
 	./$(EXE)
 

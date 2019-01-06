@@ -8,7 +8,10 @@ ProblemPoisson::ProblemPoisson()
 :
 x(CELL_NUMBER),
 b(CELL_NUMBER),
-A(CELL_NUMBER, CELL_NUMBER)
+A(CELL_NUMBER, CELL_NUMBER),
+AdaptFlag_(0),
+helper_poisson(),
+helper_adapt()
 {
   HelperPoisson helper_poisson();
 }
@@ -29,7 +32,7 @@ AdaptFlag_(AdaptFlag)
 
 void ProblemPoisson::run()
 {
-  
+
   pre_processing();
   assemble_system();
   solve();
@@ -49,32 +52,39 @@ void ProblemPoisson::assemble_system()
   id_source_ = helper_adapt.find_source(x_source_, y_source_);
   // Iterate over cells to assemble the system
   for (int id = 0; id < CELL_NUMBER; ++id)
-  {
+  {  
     // if AdaptFlag is on, use adaptive method to calculate cell coordinate
+    Cell* cell_ptr;
     if (AdaptFlag_ == 0)
-      Cell cell(id);
+      {
+        Cell cell(id);
+        cell_ptr = &cell;
+      }
     else 
-      Cell cell(id, id_source_, x_source_, y_source_);
+      {
+        Cell cell(id, id_source_, x_source_, y_source_);
+        cell_ptr = &cell;
+      }
     map<DIRECTION, int>::iterator it;
     // Iterate over faces
-    for (it = cell.neighbour_ids_.begin(); it != cell.neighbour_ids_.end(); it++)
+    for (it = cell_ptr->neighbour_ids_.begin(); it != cell_ptr->neighbour_ids_.end(); it++)
     {
       // Face contribution
       if (it->second == OUTSIDE_CELL_ID)
       {
-        triplet_list.push_back(T(cell.id_, cell.id_, -2));
-        double x_boundary_value = helper_poisson.get_boundary_value_x(cell, it->first);
-        b(cell.id_) += -2*x_boundary_value;
+        triplet_list.push_back(T(cell_ptr->id_, cell_ptr->id_, -2));
+        double x_boundary_value = helper_poisson.get_boundary_value_x(*cell_ptr, it->first);
+        b(cell_ptr->id_) += -2*x_boundary_value;
       }
       else
       {
-        triplet_list.push_back(T(cell.id_, cell.id_, -1));
-        triplet_list.push_back(T(cell.id_, it->second, 1));
+        triplet_list.push_back(T(cell_ptr->id_, cell_ptr->id_, -1));
+        triplet_list.push_back(T(cell_ptr->id_, it->second, 1));
       }
     }
     // Volume contribution
-    double rhs_f = helper_poisson.rhs_function(cell.cell_center_);
-    b(cell.id_) += -rhs_f*Area;   
+    double rhs_f = helper_poisson.rhs_function(cell_ptr->cell_center_);
+    b(cell_ptr->id_) += -rhs_f*Area;   
     // This is a very efficient way of assembling the matrix A. The function is provided by the external library Eigen.
     A.setFromTriplets(triplet_list.begin(), triplet_list.end());
   }
@@ -113,7 +123,7 @@ void ProblemPoisson::post_processing()
   for (int i = 0; i < CELL_NUMBER; ++i)
   {
     Cell cell(i);
-    error += pow(helper_poisson_ptr->boundary_function_x(cell.cell_center_) - x(i), 2)*Area; 
+    error += pow(helper_poisson.boundary_function_x(cell.cell_center_) - x(i), 2)*Area; 
   }
   error = sqrt(error);
 

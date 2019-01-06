@@ -46,6 +46,7 @@ class Cell
 
 		/** Initialize {vertices_} */
 		void ini_coordinates();		
+		void ad_coordinates();
 
 		/** Initialize {neighbour_ids_} */
 		void ini_neighbours();	

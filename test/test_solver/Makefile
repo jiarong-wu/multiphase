@@ -1,6 +1,6 @@
 
 # Where to find user code.
-USER_DIR = /home/tianju/Dropbox/work/work_station/APC524_final_project/local_git/multiphase
+USER_DIR = ../..
 # Flags passed to the C++ compiler.
 # CXXFLAGS += -g -Wall -Wextra -pthread -std=c++11
 
@@ -16,6 +16,8 @@ TESTS = cell_unittest.bin
 
 # Solver related flags
 INC_DIR = $(USER_DIR)/solver/include
+#INC_DIR = /home/deike/Desktop/APC524/multiphase/solver/include
+
 LIB_DIR = $(USER_DIR)/eigen
 CFLAGS = -I$(INC_DIR) -I$(LIB_DIR) 
 
@@ -27,10 +29,13 @@ all : $(TESTS)
 cell.o : $(USER_DIR)/solver/source/cell.cpp 
 	$(CXX) $(CXXFLAGS) $(CFLAGS) -c $(USER_DIR)/solver/source/cell.cpp
 
+helper_adapt.o :  $(USER_DIR)/solver/source/helper_adapt.cpp
+	$(CXX) $(CXXFLAGS) $(CFLAGS) -c $(USER_DIR)/solver/source/helper_adapt.cpp
+
 cell_unittest.o : cell_unittest.cpp 
 	$(CXX) $(CXXFLAGS) $(CFLAGS) -c cell_unittest.cpp
 
-$(TESTS) : cell.o cell_unittest.o 
+$(TESTS) : cell.o helper_adapt.o cell_unittest.o 
 	$(CXX) $(CXXFLAGS) $(CFLAGS) $^ libgtest.a -o $@ $(TESTFLAGS)
 
 
