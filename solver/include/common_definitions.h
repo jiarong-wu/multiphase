@@ -30,6 +30,10 @@ typedef vector<int> int_vec;
 /* Some of the constants should be made into the Cell class static member variables */
 /* Or we can try to establish a namespace to store those variables */
 
+
+const int FLAG = 2;
+
+
 /* How many times we want to refine the mesh.
    For each time, one square cell is divided into four. */
 const int DIVISION = 6;
@@ -68,8 +72,7 @@ const int OUTSIDE_CELL_ID = -1;
 
 /* {X_1} is the lower left point while {X_2} is the upper right point of the physical domain  */
 const vec X_1{0, 0};
-const vec X_2{1, 1};
-
+const vec X_2{1000, 1000};
 
 
 /* Cell size */

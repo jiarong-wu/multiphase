@@ -19,7 +19,13 @@ old_Pcap_solution(CELL_NUMBER),
 system_rhs(CELL_NUMBER),
 flag_vector(CELL_NUMBER),
 system_matrix(CELL_NUMBER, CELL_NUMBER),
-time(0)
+time(0),
+InjWell(685),
+ProWell(500),
+Qc_int(0.0/Area),
+Qb_int(0.0/Area),
+Qc_ext(0.0/Area),
+Qb_ext(0.0/Area) 
 {
   helper_vertical_ptr = new HelperVertical;
 }
@@ -36,7 +42,7 @@ void ProblemVertical::run()
 
   cout << "Total number of dofs is " << CELL_NUMBER << endl;
 
-  for (int i = 0; i < 500; ++i)
+  for (int i = 0; i < 100; ++i)
   {
 
     time += DELTA_T;
@@ -151,13 +157,30 @@ void ProblemVertical::assemble_system_Pb()
     //   system_rhs(cell.id_) += -Q*Area;
     // }
 
-
-    if (cell.id_ == 685)
+      
+    // CO2 injection well in the pressure equation. 
+    if (cell.id_ == InjWell)
     {
-      double Q = 0.05/Area;
-      system_rhs(cell.id_) += -Q*Area;
+      system_rhs(cell.id_) += -Qc_int*Area;
     }
 
+    // brine extraction well in the pressure equation. 
+    if (cell.id_ == ProWell) 
+    {
+      system_rhs(cell.id_) += Qb_ext*Area; 
+    }
+
+    // compare with the analytical solution (Thiem Eqn) after several time steps
+    /* from the model output: 
+       head = dz/2 + Pb/rg_b; 
+       radius = ; 
+
+       from the Thiem Equation: 
+       transmissivity = k*rg_b/mu_b*Lz;   
+       radius = ; 
+       head = Lz - (-Qb_est*Area)/2/pi/transmissivity*ln(r/(Lx/2)); */
+
+    
   }
 
   // This is a very efficient way of assembling the matrix A. The function is provided by the external library Eigen.
@@ -250,16 +273,15 @@ void ProblemVertical::compute_Sc()
     //   new_Sc_solution(cell.id_) += DELTA_T*Q/coarse_porosity;
     // }
 
-    if (cell.id_ == 685)
+
+    // CO2 injection well in the transport equation. 
+    if (cell.id_ == InjWell)
     {
-      double Q = 0.05/Area;
-      new_Sc_solution(cell.id_) += DELTA_T*Q/coarse_porosity;
+      new_Sc_solution(cell.id_) += DELTA_T*Qc_int/coarse_porosity;
     }
 
-
   }
-
-
+    
   // cout << setprecision(10) << new_Sc_solution  << endl << endl;
 
 }
@@ -323,5 +345,7 @@ ProblemVertical::~ProblemVertical()
 {
   delete helper_vertical_ptr;
 }
+
+
 
 

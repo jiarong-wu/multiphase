@@ -34,6 +34,19 @@ class ProblemVertical : public Problem
 
     double time;
 
+
+    // cell ids of the injection and extraction wells. 
+    int InjWell;
+    int ProWell;
+
+    // injection term; unit is m3/s/m2 = m/s. 
+    double Qc_int;
+    double Qb_int;
+
+    // extraction volume; unit is m3/s/m2 = m/s. 
+    double Qc_ext;
+    double Qb_ext; 
+
     void run_one_step();
 
     void assemble_system_Pb();

@@ -17,15 +17,25 @@
 int main()
 {
 
-  ProblemPoisson poisson;
-  poisson.run();
-  
-  // ProblemFlow two_phase_flow;
-  // two_phase_flow.run();
-  
-  // ProblemVertical VE_model;
-  // VE_model.run();
- 
+
+
+   
+  if (FLAG == 0)
+  {
+    ProblemPoisson poisson;
+    poisson.run(); 
+  }
+  else if (FLAG == 1)
+  {
+    ProblemFlow two_phase_flow;
+    two_phase_flow.run();
+  }
+  else
+  {
+    ProblemVertical VE_model;
+    VE_model.run();
+  }
+
   
   return 0;
 
