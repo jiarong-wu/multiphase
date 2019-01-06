@@ -18,7 +18,6 @@ int main()
 {
 
 
-
    
   if (FLAG == 0)
   {
