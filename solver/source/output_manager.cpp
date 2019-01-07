@@ -1,4 +1,5 @@
- #include "output_manager.h"
+#include "output_manager.h"
+#include "helper_adapt.h"
 
 
 OutputManager::OutputManager(int cycle)
@@ -31,7 +32,11 @@ void OutputManager::scalar_output(VectorXd &x, const string &name)
   vtkstream << "POINTS " << VERTICES_PER_CELL*CELL_NUMBER << " double" << endl;
   for (int id = 0; id < CELL_NUMBER; ++id)
   {
-    Cell cell(id);
+    // Cell cell(id);
+    HelperAdapt helper_adapt;
+    int id_source = helper_adapt.find_source(0.5, 0.5);
+    double REFINE_FACTOR = 2;
+    Cell cell(id, id_source, 0.5, 0.5, REFINE_FACTOR);
     for (int v = 0; v < VERTICES_PER_CELL; ++v)
     {
       vtkstream << cell.vertices_[v][0] << " "

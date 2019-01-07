@@ -15,7 +15,7 @@ class ProblemPoisson : public Problem
     /* Constructor. */
     ProblemPoisson(); 
     ProblemPoisson(int CELL_NUMBER, int AdaptFlag, double X_SOURCE, double Y_SOURCE);
-    ~ProblemPoisson();     
+    // ~ProblemPoisson();     
     /* Run this problem. */
     void run(); 
     	
@@ -27,10 +27,10 @@ class ProblemPoisson : public Problem
     /* The flag for adaptive grid. */
     int AdaptFlag_;
     /* The position of the source term.*/
-    double x_source_ = 0;
-    double y_source_ = 0;
+    double x_source_;
+    double y_source_;
     /* The id of the source cell. */
-    int id_source_ = -1;
+    int id_source_;
 
     HelperPoisson helper_poisson;
     HelperAdapt helper_adapt;

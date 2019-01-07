@@ -4,15 +4,23 @@
 #include "helper_adapt.h"
 #include <numeric>
 
-/* Test for HelperAdapt::find_source */
-TEST(HelperAdaptTest, FindCellId)
+
+class HelperAdaptTest : public testing::Test
 {
-  HelperAdapt helper;
+protected:
+  void SetUp() override 
+  {
+      HelperAdapt helper;
+  }
+};
+/* Test for HelperAdapt::find_source */
+TEST_F(HelperAdaptTest, FindCellId)
+{
   double x = X_2[0] - X_1[0];
   double y = X_2[1] - X_1[1];
   // If the first cell of the first line has the right id
   // Notice id starts at 0
-  int id0 = helper.find_source(X_1[0], X_1[1]);
+  int id0 = HelperAdaptTest::helper.find_source(X_1[0], X_1[1]);
   EXPECT_EQ(id0, 0);
   // If the middle of the first line has the right id
   int id1 = helper.find_source(X_1[0]+x/2, H/2);
@@ -26,9 +34,8 @@ TEST(HelperAdaptTest, FindCellId)
 // 1. When setting the REFINE_FACTOR to one, and the source is in the center
 // the result should be the same with the original
 // 2. When setting the REFINE_FACTOR to one, the whole line add up to the correct length
-TEST(HelperAdaptTest, ComputeStep1)
+TEST_F(HelperAdaptTest, ComputeStep1)
 {
-  HelperAdapt helper;
   vec x_step1, x_step2;
   x_step1 = helper.compute_step(20, 31, (X_2[0] - X_1[0])/2 - H/2, 1);
   double x = x_step1[20];
@@ -43,9 +50,8 @@ TEST(HelperAdaptTest, ComputeStep1)
 
 /* Test2 for HelperAdapt::compute_step */
 // The ratio btw cells is indeed the assigned value REFINE_RATIO
-TEST(HelperAdaptTest, ComputeStep2)
+TEST_F(HelperAdaptTest, ComputeStep2)
 {
-  HelperAdapt helper;
   vec x_step1;
   x_step1 = helper.compute_step(20, 31, (X_2[0] - X_1[0])/2 - H/2, 1.2);
   EXPECT_EQ(x_step1[20], x_step1[19]/1.2);
@@ -69,16 +75,15 @@ TEST(HelperAdaptTest, ComputeStep4_Even)
   HelperAdapt helper;
   vec x_step2;
   x_step2 = helper.compute_step(4, 4, 4.5*H, 1.2);
-  EXPECT_FLOAT_EQ(x_step2[0], 4.5/5.34*H); 
-  EXPECT_FLOAT_EQ(x_step2[1], 1.2*4.5/5.34*H); 
-  EXPECT_FLOAT_EQ(x_step2[2], 1.44*4.5/5.34*H);
-  EXPECT_FLOAT_EQ(x_step2[3], 1.2*4.5/5.34*H);  
-  EXPECT_FLOAT_EQ(x_step2[4], 4.5/5.34*H);
+  EXPECT_FLOAT_EQ(x_step2[0], 4.5/5.38*H); 
+  EXPECT_FLOAT_EQ(x_step2[1], 1.2*4.5/5.38*H); 
+  EXPECT_FLOAT_EQ(x_step2[2], 1.44*4.5/5.38*H);
+  EXPECT_FLOAT_EQ(x_step2[3], 1.2*4.5/5.38*H);  
+  EXPECT_FLOAT_EQ(x_step2[4], 4.5/5.38*H);
 }
 
-TEST(HelperAdaptTest, ComputeStep4_Odd)
+TEST_F(HelperAdaptTest, ComputeStep4_Odd)
 {
-  HelperAdapt helper;
   vec x_step3;
   x_step3 = helper.compute_step(5, 5, 5.5*H, 1.2);
   EXPECT_FLOAT_EQ(x_step3[0], 5.5/6.78*H);  
@@ -112,60 +117,27 @@ TEST(CellTest, BoundaryNumber)
 // For the first line of cells, is the total length equal to added cell size
 TEST(CellTest, AdaptiveMesh1)
 {
-  double length_x = 0;
+  double length = 0;
   for (int id = 0; id < LINE_CELL_NUMBER; ++id)
   {
-    Cell cell(id, 31, (X_2[0] - X_1[0])/2 - H/2, H/2, 1.2);
-    length_x += cell.H_[0];
+    Cell cell(id, 32, (X_2[0] - X_1[0])/2 - H/2, H/2, 1);
+    length += cell.H_[0];
   }
-  EXPECT_FLOAT_EQ(length_x, X_2[0] - X_1[0]);
+  EXPECT_EQ(length, X_2[0] - X_1[0]);
 
-  length_x = 0;
+  length = 0;
   for (int id = 0; id < LINE_CELL_NUMBER; ++id)
   {
     Cell cell(id, 63, (X_2[0] - X_1[0])- H/2, H/2, 1);
-    length_x += cell.H_[0];
+    length += cell.H_[0];
   }
-  EXPECT_FLOAT_EQ(length_x, X_2[0] - X_1[0]);
+  EXPECT_EQ(length, X_2[0] - X_1[0]);
 }
 
-/* Test2 for Cell::ad_coordinates() */
-// For the y direction, feed in the source on the first line and the second line
-TEST(CellTest, AdaptiveMesh2)
-{
-  double length_y = 0;
-  for (int id = 0; id < CELL_NUMBER; ++id)
-  {
-    Cell cell(id, 31, (X_2[0] - X_1[0])/2 - H/2, H/2, 1.2);
-    if (id%LINE_CELL_NUMBER == 31)
-      length_y += cell.H_[1];
-  }
-  EXPECT_FLOAT_EQ(length_y, X_2[1] - X_1[1]);
 
-  length_y = 0;
-  for (int id = 0; id < CELL_NUMBER; ++id)
-  {
-    Cell cell(id, 31 + LINE_CELL_NUMBER, (X_2[0] - X_1[0])/2 - H/2, 1.5*H, 1.2);
-    if (id%LINE_CELL_NUMBER == 31)
-      length_y += cell.H_[1];
-  }
-  EXPECT_FLOAT_EQ(length_y, X_2[1] - X_1[1]);
-}
 
-/* Test3 for Cell::ad_coordinates() */
-// If the verices coordinate and the face coordinate is the same for 
-// Cell generated using uniform method and Cell generated using adaptive 
-// method but the REFINE_FACTOR is set to 1
-TEST(CellTest, AdaptiveMesh3)
-{
-  for (int id = 0; id < CELL_NUMBER/4; ++id)
-  {
-    Cell cell_uni(id);
-    Cell cell_adapt(id, 31 + LINE_CELL_NUMBER, (X_2[0] - X_1[0])/2 - H/2, 1.5*H, 1);
-    EXPECT_FLOAT_EQ(cell_uni.vertices_[1][0], cell_adapt.vertices_[1][0]);
-    EXPECT_FLOAT_EQ(cell_uni.face_centers_[SOUTH][0], cell_adapt.face_centers_[SOUTH][0]);
-  }
-}
+
+
 
 // TEST(CellTest, CellId)
 // {
@@ -199,4 +171,3 @@ int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
-

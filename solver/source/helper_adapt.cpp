@@ -29,7 +29,8 @@ vec HelperAdapt::compute_step(int index, int index_source, double distance, doub
     {
       for (int i=0; i < index_source/2; ++i)
         denominator += 2*pow(REFINE_FACTOR, i);
-      denominator += -0.5 + pow(REFINE_FACTOR, index_source/2+1);
+      denominator += -0.5 + pow(REFINE_FACTOR, index_source/2);
+      // cout << denominator <<endl;
       step_source = distance/denominator;
       // Calculating each cell width to the left of the targeted cell, put them in an array
       for (int i=0; i <= index; ++i)
@@ -44,6 +45,7 @@ vec HelperAdapt::compute_step(int index, int index_source, double distance, doub
       for (int i=0; i < (index_source/2 + 1); ++i)
         denominator += 2*pow(REFINE_FACTOR, i);
       denominator += -0.5;
+      // cout << denominator <<endl;
       step_source = distance/denominator;
       for (int i=0; i <= index; ++i)
       {

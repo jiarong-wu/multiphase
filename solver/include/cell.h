@@ -36,7 +36,7 @@ class Cell
     	vec cell_center_;
 
     	/** cell size, namely H_x, H_y */
-    	// vec H_;
+    	vec H_;
 
     	/** Store face center coordinates */
     	map<DIRECTION, vec> face_centers_;
@@ -46,17 +46,20 @@ class Cell
 
 		/** Constructor */
 		Cell(int id);
-		Cell(int id, int id_source, double x_source, double y_source);
+		Cell(int id, int id_source, double x_source, double y_source, double REFINE_FACTOR);
+
+		/** Destructor */
+		~Cell();
 
 		/** Initialize {vertices_} */
 		void ini_coordinates();		
-		void ad_coordinates();
+		void ad_coordinates(double REFINE_FACTOR);
 
 		/** Initialize {neighbour_ids_} */
 		void ini_neighbours();	
 
 	private:
-		HelperAdapt helper_adapt;
+		HelperAdapt helper_adapt_cell_;
 };
 
 
