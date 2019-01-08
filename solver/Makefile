@@ -16,7 +16,7 @@ INC = $(wildcard $(INC_DIR)/*.h)
 OUT_SOL = $(wildcard $(OUT_DIR_SOL)/*.vtk)
 OUT_ANA = $(wildcard $(OUT_DIR_ANA)/*.out)
 
-CFLAGS = -I$(INC_DIR) -I$(LIB_DIR)
+CFLAGS = -I$(INC_DIR) -I$(LIB_DIR) -std=c++11
 
 run: $(EXE)
 	./$(EXE)

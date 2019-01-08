@@ -31,7 +31,7 @@ typedef vector<int> int_vec;
 /* Or we can try to establish a namespace to store those variables */
 
 
-const int FLAG = 2;
+const int FLAG = 0;
 
 /* How many times we want to refine the mesh.
    For each time, one square cell is divided into four. */
@@ -55,7 +55,7 @@ const int TOTAL_DOF = CELL_NUMBER;
 
 //  {X_1} is the lower left point while {X_2} is the upper right point of the physical domain  
 const vec X_1{0, 0};
-const vec X_2{1000, 1000};
+const vec X_2{1, 1};
 /* Cell size */
 const double H = (X_2[0] - X_1[0])/LINE_CELL_NUMBER;
 /* Cell area */

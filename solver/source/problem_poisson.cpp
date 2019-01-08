@@ -1,14 +1,44 @@
 #include "problem_poisson.h"
+#include "helper_adapt.h"
 
-
+// The default constructor
 ProblemPoisson::ProblemPoisson()
 :
 x(CELL_NUMBER),
 b(CELL_NUMBER),
-A(CELL_NUMBER, CELL_NUMBER)
+A(CELL_NUMBER, CELL_NUMBER),
+AdaptFlag_(0)
 {
-  helper_poisson_ptr = new HelperPoisson;
+  HelperPoisson helper_poisson();
+  HelperAdapt helper_adapt();
+  cout << "Using uniform grid!" << endl;
 }
+
+// Another constructor that passes in flags
+ProblemPoisson::ProblemPoisson(int CELL_NUMBER, int AdaptFlag, double X_SOURCE, double Y_SOURCE)
+:
+x(CELL_NUMBER),
+b(CELL_NUMBER),
+A(CELL_NUMBER, CELL_NUMBER),
+x_source_(X_SOURCE),
+y_source_(Y_SOURCE),
+AdaptFlag_(AdaptFlag)
+{
+  HelperPoisson helper_poisson();
+  HelperAdapt helper_adapt();
+  cout << "Using refined grid!" << endl;
+}
+
+// ProblemPoisson::ProblemPoisson()
+// :
+// x(CELL_NUMBER),
+// b(CELL_NUMBER),
+// A(CELL_NUMBER, CELL_NUMBER),
+// AdaptFlag_(0)
+// {
+//   // HelperPoisson helper_poisson();
+//   helper_poisson_ptr = new HelperPoisson;
+// }
 
 void ProblemPoisson::run()
 {
@@ -26,50 +56,69 @@ void ProblemPoisson::pre_processing()
 
 void ProblemPoisson::assemble_system()
 {
-
-  int counter = 0;
-  // Iterate over cells
+  // Later make REFINE_FACTOR a changeable parameter
+  double REFINE_FACTOR = 2;
+  // Iterate over cells to first: find source
+  // Should add "if given the source coordinate"
+  // Iterate over cells to assemble the system
   for (int id = 0; id < CELL_NUMBER; ++id)
-  {
-    Cell cell(id);
-    // Check out the syntax of C++ STL map if you are not familiar
-    // It's like the dictionary in Python
-    map<DIRECTION, int>::iterator it;
-    // Iterate over faces
-    for (it = cell.neighbour_ids_.begin(); it != cell.neighbour_ids_.end(); it++)
-    {
-      // Face contribution
-      if (it->second == OUTSIDE_CELL_ID)
+  {  
+    // if AdaptFlag is on, use adaptive method to calculate cell coordinate
+    if (AdaptFlag_ == 0)
       {
-        triplet_list.push_back(T(cell.id_, cell.id_, -2));
-        double x_boundary_value = helper_poisson_ptr->get_boundary_value_x(cell, it->first);
-        b(cell.id_) += -2*x_boundary_value;
+        Cell cell(id);
+        map<DIRECTION, int>::iterator it;
+        // Iterate over faces
+        for (it = cell.neighbour_ids_.begin(); it != cell.neighbour_ids_.end(); it++)
+        {
+          // Face contribution
+          if (it->second == OUTSIDE_CELL_ID)
+          {
+            triplet_list.push_back(T(cell.id_, cell.id_, -2));
+            double x_boundary_value = helper_poisson.get_boundary_value_x(cell, it->first);
+            b(cell.id_) += -2*x_boundary_value;
+          }
+          else
+          {
+            triplet_list.push_back(T(cell.id_, cell.id_, -1));
+            triplet_list.push_back(T(cell.id_, it->second, 1));
+          }
+        }
+        // Volume contribution
+        double rhs_f = helper_poisson.rhs_function(cell.cell_center_);
+        b(cell.id_) += -rhs_f*Area;   
+        // This is a very efficient way of assembling the matrix A. The function is provided by the external library Eigen.
+        A.setFromTriplets(triplet_list.begin(), triplet_list.end());
       }
-      else
+    else 
       {
-        triplet_list.push_back(T(cell.id_, cell.id_, -1));
-        triplet_list.push_back(T(cell.id_, it->second, 1));
+        id_source_ = helper_adapt.find_source(x_source_, y_source_);
+        Cell cell(id, id_source_, x_source_, y_source_, REFINE_FACTOR);
+        map<DIRECTION, int>::iterator it;
+        // Iterate over faces
+        for (it = cell.neighbour_ids_.begin(); it != cell.neighbour_ids_.end(); it++)
+        {
+          // Face contribution
+          if (it->second == OUTSIDE_CELL_ID)
+          {
+            triplet_list.push_back(T(cell.id_, cell.id_, -2));
+            double x_boundary_value = helper_poisson.get_boundary_value_x(cell, it->first);
+            b(cell.id_) += -2*x_boundary_value;
+          }
+          else
+          {
+            triplet_list.push_back(T(cell.id_, cell.id_, -1));
+            triplet_list.push_back(T(cell.id_, it->second, 1));
+          }
+        }
+        // Volume contribution
+        double rhs_f = helper_poisson.rhs_function(cell.cell_center_);
+        b(cell.id_) += -rhs_f*Area;   
+        // This is a very efficient way of assembling the matrix A. The function is provided by the external library Eigen.
+        A.setFromTriplets(triplet_list.begin(), triplet_list.end());
       }
-    }
-    for (it = cell.neighbour_ids_.begin(); it != cell.neighbour_ids_.end(); it++)
-    {
-      // Purely for test purpose
-      if (it->second == OUTSIDE_CELL_ID)
-        counter++;   
-    }
-    // Volume contribution
-    double rhs_f = helper_poisson_ptr->rhs_function(cell.cell_center_);
-    b(cell.id_) += -rhs_f*Area;   
   }
-
-  // To do: Jiarong -> You may want to change the following "assert" into an execption "try-catch" in the test code
-  assert(("Bug! Wrong calculation of total number of boundary faces.", counter == 4*LINE_CELL_NUMBER));
-
-  // This is a very efficient way of assembling the matrix A. The function is provided by the external library Eigen.
-  A.setFromTriplets(triplet_list.begin(), triplet_list.end());
-
 }
-
 
 void ProblemPoisson::solve()
 {
@@ -104,7 +153,7 @@ void ProblemPoisson::post_processing()
   for (int i = 0; i < CELL_NUMBER; ++i)
   {
     Cell cell(i);
-    error += pow(helper_poisson_ptr->boundary_function_x(cell.cell_center_) - x(i), 2)*Area; 
+    error += pow(helper_poisson.boundary_function_x(cell.cell_center_) - x(i), 2)*Area; 
   }
   error = sqrt(error);
 
@@ -112,11 +161,7 @@ void ProblemPoisson::post_processing()
   cout << "L2 norm error is " << error << endl;
 }
 
+// ProblemPoisson::~ProblemPoisson()
+// {
 
-
-
-
-ProblemPoisson::~ProblemPoisson()
-{
-  delete helper_poisson_ptr;
-}
+// }

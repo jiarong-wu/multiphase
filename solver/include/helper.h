@@ -17,7 +17,8 @@
 #define HELPER_H
 
 #include "common_definitions.h"
-#include "cell.h"
+// No need to include cell.h. It will only cause circular
+// #include "cell.h"
 
 
 class Helper
