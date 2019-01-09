@@ -19,7 +19,11 @@ int main()
    
   if (FLAG == 0)
   {
+    // We now have to manually choose modes, and the refine factor is hardcoded into 
+    // problem_poisson.cpp Remember there is also a part in output manager that needs 
+    // to be changed if changing REFINE_FACTOR or the source position
     ProblemPoisson poisson;
+    // ProblemPoisson poisson(CELL_NUMBER, 1, 0.5, 0.5);
     poisson.run(); 
   }
   else if (FLAG == 1)
