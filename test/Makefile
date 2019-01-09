@@ -1,6 +1,6 @@
 
 # Where to find user code.
-USER_DIR = ../..
+USER_DIR = ..
 # Flags passed to the C++ compiler.
 # CXXFLAGS += -g -Wall -Wextra -pthread -std=c++11
 
@@ -15,10 +15,11 @@ CXX = g++
 TESTS = cell_unittest.bin
 
 # Solver related flags
-INC_DIR = $(USER_DIR)/solver/include $(USER_DIR)/test
+INC_DIR_1 = $(USER_DIR)/solver/include 
+INC_DIR_2 = ./
 
 LIB_DIR = $(USER_DIR)/eigen
-CFLAGS = -I$(INC_DIR) -I$(LIB_DIR) 
+CFLAGS = -I$(INC_DIR_1) -I$(INC_DIR_2) -I$(LIB_DIR) 
 
 
 # House-keeping build targets.
