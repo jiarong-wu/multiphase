@@ -2,11 +2,17 @@
  * \author Tianju Xue
  * \author Yiheng Tao
  * \author Jiarong Wu
- * \bug Test bug  
+ * \bug No bug report currently. 
+ * \note The code is still under development.
+ * \brief This is a Finite Volume solver for generic problems. The goal is to solve the 
+ * multi-phase flow problems with potential applications in carbon capture and storage.
+ * However, it is also possible to use the solve to solve other types of equations. A demo
+ * example could the Poisson's equaiont \f$-\Delta u = f\f$. 
  * \mainpage The APC524 project
- * \section sec1 Introduction
- * \section sec2 Workflow
  */
+
+ // \section sec1 Background
+ 
 
 #include "problem.h"
 #include "problem_poisson.h"
