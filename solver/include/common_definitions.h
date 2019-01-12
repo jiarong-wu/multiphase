@@ -97,6 +97,7 @@ namespace PoissonModel
 namespace FlowModel
 {
   const double DELTA_T = 0.001;
+  const double mu = 0.2;  
 }
 
 

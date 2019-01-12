@@ -1,3 +1,11 @@
+/**
+ * \class HelperPoisson
+ *
+ * This class provides functions that are necessary for Poisson's problem. These functions are 
+ * very specific. 
+ *
+ */
+
 #ifndef HELPER_POISSON_H
 #define HELPER_POISSON_H
 
@@ -11,9 +19,9 @@ class HelperPoisson: public Helper
 {
   public:
     
-    double get_boundary_value_x(Cell &cell, DIRECTION direction); //!< This is a test in header
-    double boundary_function_x(vec &point); ///< This is a test in header
-    double rhs_function(vec &point);
+    double get_boundary_value_x(Cell &cell, DIRECTION direction); 
+    double boundary_function_x(vec &point); 
+    double rhs_function(vec &point); 
 
 };
 

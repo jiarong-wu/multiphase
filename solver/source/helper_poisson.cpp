@@ -1,9 +1,7 @@
  #include "helper_poisson.h"
 
 /*!
- * \brief This is the brief
- * \param This is the paramter
- * \details These are the details
+ * \details This function computes the boundary values according to the boundary functions.
  */
 double HelperPoisson::get_boundary_value_x(Cell &cell, DIRECTION direction)
 {
@@ -11,12 +9,17 @@ double HelperPoisson::get_boundary_value_x(Cell &cell, DIRECTION direction)
   return boundary_function_x(cell.face_centers_[direction]);
 }
 
-
+/*!
+ * \details This function defines the boundary function in an anlytical form.
+ */
 double HelperPoisson::boundary_function_x(vec &point)
 {
   return sin(2*M_PI*(point[0] + point[1]));
 }
 
+/*!
+ * \details This the right hand side function in an anlytical form
+ */
 double HelperPoisson::rhs_function(vec &point)
 {
   // Mannualy set the rhs function so that the home made analytical solution is satisfied in the poisson equation

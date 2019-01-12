@@ -1,11 +1,10 @@
- #include "helper_vertical.h"
+#include "helper_vertical.h"
 
 
-
-
-
-
-void HelperVertical::initial_condition_Sc(VectorXd &old_Sc_solution /* This function is a rubbish version. Got to be deleted and replaced. */)
+/*!
+ * \details Interpolte the initial value for Sc
+*/
+void HelperVertical::initial_condition_Sc(VectorXd &old_Sc_solution)
 {
   for (int i = 0; i < old_Sc_solution.size(); ++i)
   {
@@ -13,6 +12,9 @@ void HelperVertical::initial_condition_Sc(VectorXd &old_Sc_solution /* This func
   } 
 }
 
+/*!
+ * \details Interpolte the initial value for Sb
+*/
 void HelperVertical::initial_condition_Sb(VectorXd &old_Sb_solution, VectorXd &old_Sc_solution)
 {
   for (int i = 0; i < old_Sb_solution.size(); ++i)
@@ -22,7 +24,9 @@ void HelperVertical::initial_condition_Sb(VectorXd &old_Sb_solution, VectorXd &o
 }
 
 
-
+/*!
+ * \details Interpolte the initial value for Pb
+*/
 void HelperVertical::initial_condition_Pb(VectorXd &old_Pb_solution /* This function is a rubbish version. Got to be deleted and replaced. */)
 {
   for (int i = 0; i < old_Pb_solution.size(); ++i)
@@ -34,7 +38,9 @@ void HelperVertical::initial_condition_Pb(VectorXd &old_Pb_solution /* This func
 
 
 
-
+/*!
+ * \details Interpolte the initial value for Pcap, standing for capillary pressure
+*/
 void HelperVertical::initial_condition_Pcap(VectorXd &old_Pcap_solution,  VectorXd &old_Sc_solution)
 {
   for (int i = 0; i < old_Pcap_solution.size(); ++i)
@@ -46,8 +52,9 @@ void HelperVertical::initial_condition_Pcap(VectorXd &old_Pcap_solution,  Vector
 }
 
 
-
-
+/*!
+ * \details Interpolte the initial value for Pc
+*/
 void HelperVertical::initial_condition_Pc(VectorXd &old_Pc_solution, VectorXd &old_Pb_solution, VectorXd &old_Pcap_solution)
 {
 
@@ -59,24 +66,36 @@ void HelperVertical::initial_condition_Pc(VectorXd &old_Pc_solution, VectorXd &o
 }
 
 
-
+/*!
+ * \details Get initial value for Pcap
+*/
 void HelperVertical::get_Pcap(VectorXd &new_Pcap_solution, VectorXd &old_Sc_solution)
 {
   initial_condition_Pcap(new_Pcap_solution, old_Sc_solution);
 }
 
+/*!
+ * \details Get initial value for Pc
+*/
 void HelperVertical::get_Pc(VectorXd &new_Pc_solution, VectorXd &new_Pb_solution, VectorXd &new_Pcap_solution)
 {
   initial_condition_Pc(new_Pc_solution, new_Pb_solution, new_Pcap_solution);
 }
 
+
+/*!
+ * \details Get initial value for Sb
+*/
 void HelperVertical::get_Sb(VectorXd &old_Sb_solution, VectorXd &old_Sc_solution)
 {
   initial_condition_Sb(old_Sb_solution, old_Sc_solution);
 }
 
 
-
+/*!
+ * \details Compute the permeability tensor K. Could be a random permeability tensor.
+ * \note The function needs to be improved.
+*/
 double HelperVertical::compute_K(Cell &cell, DIRECTION direction)
 {
 
@@ -104,10 +123,9 @@ double HelperVertical::compute_K(Cell &cell, DIRECTION direction)
 
 
 
-
-
-
-// Garbage code
+/*!
+ * \details Use the information from pressure to determin upwinding given time
+*/
 bool HelperVertical::determine_upwind(Cell &cell, DIRECTION direction, VectorXd &Pb_solution, VectorXd &Pc_solution, VectorXd &Pcap_solution)
 {
   double p_self = Pc_solution(cell.id_);
@@ -122,8 +140,9 @@ bool HelperVertical::determine_upwind(Cell &cell, DIRECTION direction, VectorXd 
 }
 
 
-
-
+/*!
+ * \details Compute saturation
+*/
 double HelperVertical::get_saturation(Cell &cell, DIRECTION direction, VectorXd &Sc_solution,  
                                       VectorXd &Pb_solution, VectorXd &Pc_solution, VectorXd &Pcap_solution)
 {
@@ -143,25 +162,36 @@ double HelperVertical::get_saturation(Cell &cell, DIRECTION direction, VectorXd 
 }
 
 
-
+/*!
+ * \details Get some useful intermediate variables. 
+*/
 double HelperVertical::get_coeff_b(double Sc)
 {
   return K * (1./mu_b - Sc/mu_b/(1.-sb_res));
 }
 
 
+/*!
+ * \details Get some useful intermediate variables. 
+*/
 double HelperVertical::get_coeff_c(double Sc)
 {
   return K * krc_star*Sc/mu_c/(1.-sb_res);
 }
 
 
-
+/*!
+ * \details Get boundary value of Pb
+*/
 double HelperVertical::boundary_function_Pb(vec &point)
 {
   return rg_b * (Lz - 1./2.*dz);
 }
 
+/*!
+ * \details Outside of the boundary we can define ghost cells. This is a more elegant way. 
+ * This function defines ghost values for Pb.
+*/
 double HelperVertical::get_ghost_value_Pb(Cell &cell, DIRECTION direction, VectorXd &Pb_solution)
 {
   assert(("Bug! This face should be a boundary face but it is not!", cell.neighbour_ids_[direction] == OUTSIDE_CELL_ID));
@@ -169,7 +199,10 @@ double HelperVertical::get_ghost_value_Pb(Cell &cell, DIRECTION direction, Vecto
 }
 
 
-
+/*!
+ * \details Outside of the boundary we can define ghost cells. This is a more elegant way. 
+ * This function defines ghost values for Pcap.
+*/
 double HelperVertical::get_ghost_value_Pcap(Cell &cell, DIRECTION direction, VectorXd &Pcap_solution)
 {
   assert(("Bug! This face should be a boundary face but it is not!", cell.neighbour_ids_[direction] == OUTSIDE_CELL_ID));
@@ -177,6 +210,10 @@ double HelperVertical::get_ghost_value_Pcap(Cell &cell, DIRECTION direction, Vec
 }
 
 
+/*!
+ * \details Outside of the boundary we can define ghost cells. This is a more elegant way. 
+ * This function defines ghost values for Pc.
+*/
 double HelperVertical::get_ghost_value_Pc(Cell &cell, DIRECTION direction, VectorXd &Pb_solution,  VectorXd &Pcap_solution)
 {
   assert(("Bug! This face should be a boundary face but it is not!", cell.neighbour_ids_[direction] == OUTSIDE_CELL_ID));
@@ -184,43 +221,14 @@ double HelperVertical::get_ghost_value_Pc(Cell &cell, DIRECTION direction, Vecto
 }
 
 
-
+/*!
+ * \details Obtain boundary values for Pb
+*/
 double HelperVertical::get_boundary_value_Pb(Cell &cell, DIRECTION direction)
 {
   assert(("Bug! This face should be a boundary face but it is not!", cell.neighbour_ids_[direction] == OUTSIDE_CELL_ID));
   return boundary_function_Pb(cell.face_centers_[direction]);
 }
-
-
-
-
-// double HelperVertical::get_boundary_value_Pcap(Cell &cell, DIRECTION direction, VectorXd &Pcap_solution)
-// {
-//   assert(("Bug! This face should be a boundary face but it is not!", cell.neighbour_ids_[direction] == OUTSIDE_CELL_ID));
-//   return Pcap_solution(cell.id_);
-// }
-
-
-
-
-
-// double HelperVertical::get_boundary_value_Pc(Cell &cell, DIRECTION direction, VectorXd &Pcap_solution)
-// {
-//   assert(("Bug! This face should be a boundary face but it is not!", cell.neighbour_ids_[direction] == OUTSIDE_CELL_ID));
-//   return boundary_function_Pb(cell.face_centers_[direction]) + get_boundary_value_Pcap(cell, direction, Pcap_solution);
-// }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

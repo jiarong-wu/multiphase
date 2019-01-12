@@ -1,3 +1,11 @@
+/**
+ * \class HelperFlow
+ *
+ * This class provides functions that are necessary for a flow problem. These functions are 
+ * very specific. 
+ *
+ */
+
 #ifndef HELPER_FLOW_H
 #define HELPER_FLOW_H
 
@@ -11,13 +19,13 @@ class HelperFlow: public Helper
 {
   public:
     
-    void interpolate(VectorXd &solution /* To do: There should be a function pointer as another argument here */);
+    void interpolate(VectorXd &solution );
 
-    void interpolate_S(VectorXd &solution /* This function is a rubbish version. Got to be deleted and replaced. */);
-    void interpolate_S(VectorXd &solution, double time /* This function is a rubbish version. Got to be deleted and replaced. */);
+    void interpolate_S(VectorXd &solution);
+    void interpolate_S(VectorXd &solution, double time);
 
-    void interpolate_p(VectorXd &solution /* This function is a rubbish version. Got to be deleted and replaced. */);
-    void interpolate_p(VectorXd &solution, double time /* This function is a rubbish version. Got to be deleted and replaced. */);
+    void interpolate_p(VectorXd &solution);
+    void interpolate_p(VectorXd &solution, double time);
 
     double compute_K(Cell &cell, DIRECTION direction);
 

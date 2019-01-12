@@ -1,3 +1,11 @@
+/**
+ * \class HelperVertical
+ *
+ * This class provides functions that are necessary for a VE problem. These functions are 
+ * very specific. 
+ *
+ */
+
 #ifndef HELPER_VERTICAL_H
 #define HELPER_VERTICAL_H
 

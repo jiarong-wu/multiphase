@@ -1,3 +1,5 @@
+
+
 #ifndef PROBLEM_VERTICAL_H
 #define PROBLEM_VERTICAL_H
 
@@ -34,8 +36,8 @@ class ProblemVertical : public Problem
     double time;
 
 
-    // cell ids of the injection and extraction wells. 
-    int InjWell;
+
+    int InjWell; //cell ids of the injection and extraction wells. 
     int ProWell;
 
     // injection term; unit is m3/s/m2 = m/s. 

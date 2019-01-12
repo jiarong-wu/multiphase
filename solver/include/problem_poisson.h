@@ -1,3 +1,10 @@
+/**
+ * \class ProblemPoisson
+ * 
+ * This is the poisson problem class. In this class we...
+ *
+ */
+
 #ifndef PROBLEM_POISSON_H
 #define PROBLEM_POISSON_H
 
@@ -10,7 +17,7 @@
 
 class ProblemPoisson : public Problem 
 {
-    public:
+  public:
     /* Constructor. */
     ProblemPoisson(); 
     ProblemPoisson(int CELL_NUMBER, int AdaptFlag, double X_SOURCE, double Y_SOURCE);
@@ -18,18 +25,20 @@ class ProblemPoisson : public Problem
     /* Run this problem. */
     void run(); 
         
-    private:
+  protected:
          
     VectorXd x, b;
     SparseMatrix<double> A;
     vector<T> triplet_list;
-    /* The flag for adaptive grid. */
-    int AdaptFlag_;
-    /* The position of the source term.*/
-    double x_source_;
-    double y_source_;
-    /* The id of the source cell. */
-    int id_source_;
+
+    /** The flag for adaptive grid. */ 
+    int AdaptFlag_; 
+    /** The x position of the source term. */ 
+    double x_source_; 
+    /** The y position of the source term. */
+    double y_source_; 
+    /** The id of the source cell. */
+    int id_source_; 
 
     HelperPoisson helper_poisson;
     HelperAdapt helper_adapt;
