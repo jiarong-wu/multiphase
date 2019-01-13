@@ -12,3 +12,7 @@ g++ -std=c++11 -isystem ${GTEST_DIR}/include -I${GTEST_DIR} \
     -pthread -c ${GTEST_DIR}/src/gtest-all.cc
 ar -rv libgtest.a gtest-all.o
 
+
+Instructions on using gprof for profiling purpose:
+1. Insert -pg flag when compiling
+2. In a terminal, use command "gprof -a Flow gmon.out > analysis.txt"

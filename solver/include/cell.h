@@ -1,4 +1,20 @@
-/*! \file */
+/**
+ * \class Cell 
+ *
+ * \brief The abstract base class constructs a single cell that contains geometric info.
+ *
+ * The information that a cell carries includes its id(id_), an array of vertex coordinate
+ * (vertices_), cell center coordinate(cell_center_), cell size(H_), a map that relates 
+ * direction to face center(face_centers_), another map that relates direction to neighboring
+ * cell ids(neighbour_ids_). There is additional info needed if using adaptive method, including 
+ * id_source_, x_source_, y_source_ for the id and xy coordinate of the cell respectively.
+ * 
+ * The ini_coordinate method initializes coordinate with uniform mesh. The adapt_coordinate method 
+ * adapts the mesh given the source coordinate and id. The ini_neighborhood method intializes the 
+ * neighboring ids.
+ * 
+ *
+ */
 #ifndef CELL_H
 #define CELL_H
 
@@ -28,9 +44,6 @@ class Cell
 		double x_source_;
 		double y_source_;
 
-
-    // To do: Build specific structures for things like "points" and "tensors"
-
 		/** One cell has four vertices. {vertices} are their coordinates. */
 		matrix vertices_;
 
@@ -48,6 +61,8 @@ class Cell
 
 		/** Constructor */
 		Cell(int id);
+
+		/** Constructor with adaptive method */
 		Cell(int id, int id_source, double x_source, double y_source, double REFINE_FACTOR);
 
 		/** Destructor */
@@ -55,12 +70,15 @@ class Cell
 
 		/** Initialize {vertices_} */
 		void ini_coordinates();		
+
+		/** Initialize {vertices_} using adaptive method */
 		void ad_coordinates(double REFINE_FACTOR);
 
 		/** Initialize {neighbour_ids_} */
 		void ini_neighbours();	
 
 	private:
+		/** Helper to adapt the cells */
 		HelperAdapt helper_adapt_cell_;
 };
 

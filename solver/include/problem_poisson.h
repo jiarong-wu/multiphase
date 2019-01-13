@@ -1,7 +1,8 @@
 /**
  * \class ProblemPoisson
  * 
- * This is the poisson problem class. In this class we...
+ * This is the poisson problem class. In this class we set up a poisson problem
+ * with analytical solution and test the code function.
  *
  */
 
@@ -20,8 +21,7 @@ class ProblemPoisson : public Problem
   public:
     /* Constructor. */
     ProblemPoisson(); 
-    ProblemPoisson(int CELL_NUMBER, int AdaptFlag, double X_SOURCE, double Y_SOURCE);
-    // ~ProblemPoisson();     
+    ProblemPoisson(int CELL_NUMBER, int AdaptFlag, double X_SOURCE, double Y_SOURCE);   
     /* Run this problem. */
     void run(); 
         
@@ -39,8 +39,11 @@ class ProblemPoisson : public Problem
     double y_source_; 
     /** The id of the source cell. */
     int id_source_; 
-
+    
+    /** The helper for problem related information */
     HelperPoisson helper_poisson;
+
+    /** The helper for adaptive mesh related information */
     HelperAdapt helper_adapt;
 
 
@@ -49,34 +52,6 @@ class ProblemPoisson : public Problem
     void solve();
     void output_results();  
     void post_processing(); 
-
-
 };
-
-// class ProblemPoisson : public Problem 
-// {
-// 	public:
-//     /* Constructor. */
-//     ProblemPoisson(); 
-//     ~ProblemPoisson();     
-//     /* Run this problem. */
-//     void run(); 
-    	
-// 	private:
-         
-//     VectorXd x, b;
-//     SparseMatrix<double> A;
-//     vector<T> triplet_list;
-
-//     HelperPoisson* helper_poisson_ptr;
-
-//     void pre_processing();
-//     void assemble_system();
-//     void solve();
-//     void output_results();	
-//     void post_processing();	
-
-
-// };
 
 #endif

@@ -1,7 +1,10 @@
 #include "helper_adapt.h"
 #include "common_definitions.h"
 #include "cell.h"
-/* The helper function that returns the source cell id. */
+
+/*!
+ * \details The helper function that returns the source cell id.
+*/
 int HelperAdapt::find_source(double x_position, double y_position)
 {
     for (int id = 0; id < CELL_NUMBER; ++id)
@@ -18,6 +21,9 @@ int HelperAdapt::find_source(double x_position, double y_position)
     }
 }
 
+/*!
+ * \details The helper function that returns an array of cell step size to the left(or below) the target cell.
+*/
 vec HelperAdapt::compute_step(int index, int index_source, double distance, double REFINE_FACTOR)
 {
     double denominator = 0;
