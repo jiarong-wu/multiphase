@@ -1,17 +1,28 @@
- #include "output_manager.h"
-
+#include "output_manager.h"
 
 OutputManager::OutputManager(int cycle)
 :
-cycle_(cycle)
+cycle_(cycle),
+AdaptFlag_(0),
+REFINE_RATIO_(1),
+x_source_(0),
+y_source_(0)
 {
-  // Do we have to put anything here into the constructor?
+  
+}
+OutputManager::OutputManager(int cycle, double REFINE_RATIO, double x_source, double y_source)
+:
+cycle_(cycle),
+AdaptFlag_(1),
+REFINE_RATIO_(REFINE_RATIO),
+x_source_(x_source),
+y_source_(y_source)
+{
+  
 }
 
 void OutputManager::scalar_output(VectorXd &x, const string &name)
 {
-
-
   string s_1 = "output/solutions/";
   string s_2 = "-";
   string s_3 = ".vtk";
@@ -31,15 +42,25 @@ void OutputManager::scalar_output(VectorXd &x, const string &name)
   vtkstream << "POINTS " << VERTICES_PER_CELL*CELL_NUMBER << " double" << endl;
   for (int id = 0; id < CELL_NUMBER; ++id)
   {
-    // Cell cell(id);
-    HelperAdapt helper_adapt;
-    int id_source = helper_adapt.find_source(0.5, 0.5);
-    double REFINE_FACTOR = 2;
-    Cell cell(id, id_source, 0.5, 0.5, REFINE_FACTOR);
-    for (int v = 0; v < VERTICES_PER_CELL; ++v)
+    if (AdaptFlag_==0)
     {
-      vtkstream << cell.vertices_[v][0] << " "
-      << cell.vertices_[v][1] << " " << "0" << endl;
+      Cell cell(id);
+      for (int v = 0; v < VERTICES_PER_CELL; ++v)
+      {
+        vtkstream << cell.vertices_[v][0] << " "
+        << cell.vertices_[v][1] << " " << "0" << endl;
+      }      
+    }
+    else
+    {
+      HelperAdapt helper_adapt;
+      int id_source = helper_adapt.find_source(x_source_, y_source_);
+      Cell cell(id, id_source, x_source_, y_source_, REFINE_RATIO_);
+      for (int v = 0; v < VERTICES_PER_CELL; ++v)
+      {
+        vtkstream << cell.vertices_[v][0] << " "
+        << cell.vertices_[v][1] << " " << "0" << endl;
+      }
     }
   }
   vtkstream << endl << "CELLS " << CELL_NUMBER << " " << 5*CELL_NUMBER << endl;
@@ -67,9 +88,6 @@ void OutputManager::scalar_output(VectorXd &x, const string &name)
         }
       }
   }
- 
-
-
 }
 
 

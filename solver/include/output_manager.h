@@ -13,8 +13,16 @@ class OutputManager
 
     int cycle_;
 
+    /* Output manager needs to know information about the adaptive mesh. */
+    /* This is a design fault. */
+    int AdaptFlag_; 
+    double REFINE_RATIO_;
+    double x_source_;
+    double y_source_;
+
 		/* Constructor */
-		OutputManager(int cycle);
+        OutputManager(int cycle);
+		OutputManager(int cycle, double REFINE_RATIO, double x_source, double y_source);
 
 		void scalar_output(VectorXd &x, const string &name);
 		void vector_output();

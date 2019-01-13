@@ -29,17 +29,6 @@ AdaptFlag_(AdaptFlag)
   cout << "Using refined grid!" << endl;
 }
 
-// ProblemPoisson::ProblemPoisson()
-// :
-// x(CELL_NUMBER),
-// b(CELL_NUMBER),
-// A(CELL_NUMBER, CELL_NUMBER),
-// AdaptFlag_(0)
-// {
-//   // HelperPoisson helper_poisson();
-//   helper_poisson_ptr = new HelperPoisson;
-// }
-
 void ProblemPoisson::run()
 {
   pre_processing();
@@ -130,13 +119,7 @@ void ProblemPoisson::solve()
   solver.analyzePattern(A); 
   solver.factorize(A); 
   x = solver.solve(b); 
-
-  // cout << MatrixXd(A) << endl;
-  // cout << x << endl;
-  // cout << b << endl;
-  // cout << x.maxCoeff() << endl;
 }
-
 
 
 void ProblemPoisson::output_results()
@@ -144,7 +127,6 @@ void ProblemPoisson::output_results()
   OutputManager output_manager(0);
   output_manager.scalar_output(x, "u");
 }
-
 
 
 void ProblemPoisson::post_processing()
@@ -161,7 +143,4 @@ void ProblemPoisson::post_processing()
   cout << "L2 norm error is " << error << endl;
 }
 
-// ProblemPoisson::~ProblemPoisson()
-// {
 
-// }
