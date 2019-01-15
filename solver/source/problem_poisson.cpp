@@ -115,10 +115,16 @@ void ProblemPoisson::solve()
   // SimplicialCholesky<SparseMatrix<double>> chol(A);  // performs a Cholesky factorization of A
   // VectorXd x = chol.solve(b);         // use the factorization to solve for the given right hand side
 
-  SparseLU<SparseMatrix<double>>   solver;
-  solver.analyzePattern(A); 
-  solver.factorize(A); 
-  x = solver.solve(b); 
+  // SparseLU<SparseMatrix<double>>   solver;
+  // solver.analyzePattern(A); 
+  // solver.factorize(A); 
+  // x = solver.solve(b); 
+
+
+  ConjugateGradient<SparseMatrix<double>, Lower|Upper> cg;
+  cg.compute(A);
+  x = cg.solve(b);
+
 }
 
 

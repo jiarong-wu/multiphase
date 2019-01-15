@@ -14,6 +14,7 @@
 #include <numeric>
 #include <time.h>
 #include <Eigen/Sparse>
+#include <Eigen/IterativeLinearSolvers>
 
 using namespace Eigen;
 using namespace std;
