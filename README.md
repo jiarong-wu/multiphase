@@ -9,8 +9,7 @@ We designed three test cases, which can be used to evaluate the solver. In the f
 
 To run a test case, simply assign a value to the `FLAG` in `/solver/include/common_definitions.h`. `FLAG` = 0, 1, 2 indicates test case #1, #2, #3, respectively. Then go to `/solver` and type `make` to start running the test case. While running, the screen will show the current time step and the total time step as an indication of current progress. The solver will generate output files in progression and, at the end of simulation, the solver will put the output files to `/solver/output`. Those output files can be viweded using the software Paraview for further analyses.
 
-Next, we provide the instruction to assess the files we wrote for testing and profiling. The testing was done using googletest. And we use gprof for the profiling. (Jiarong could you please write something about testing and profiling here?)
-
+Next, we provide the instruction to assess the files we wrote for testing and profiling. The testing was done using googletest. And we use gprof for the profiling. 
 
 Instruction on using googletest:
 
@@ -20,13 +19,13 @@ Instruction on using googletest:
 To do:
 Create a script for google test setup using relative path.
 
-Suppose the test file is under ${GTEST_DIR}/src/gtest-all.cc
+Suppose the test file is under `${GTEST_DIR}/src/gtest-all.cc`
 Compile like:
-g++ -std=c++11 -isystem ${GTEST_DIR}/include -I${GTEST_DIR} \
+`g++ -std=c++11 -isystem ${GTEST_DIR}/include -I${GTEST_DIR} \
     -pthread -c ${GTEST_DIR}/src/gtest-all.cc
-ar -rv libgtest.a gtest-all.o
+ar -rv libgtest.a gtest-all.o`
 
 
 Instructions on using gprof for profiling purpose:
-1. Insert -pg flag when compiling
-2. In a terminal, use command "gprof -a Flow gmon.out > analysis.txt"
+1. Insert `-pg` flag when compiling
+2. In a terminal, use command `gprof -a Flow gmon.out > analysis.txt`
