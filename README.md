@@ -7,14 +7,9 @@ In this final project, we developed a solver that could be used to solve for pro
 
 We designed three test cases, which can be used to evaluate the solver. In the first test case, the solver solves the Poisson's Equation. In the second test case, the solver solves a multiphase flow problem. In the third test case, the solver solves a geological CO2 injection problem with realistic parameters. The results of test cases #1 and #3 are presented in the final report. 
 
-To run a test case, simply assign a value to the 'constant integter FLAG' in solver/include/common_definitions.h. FLAG = 0, 1, 2 indicates test case #1, #2, #3, respectively. Then go to solver/ and type "make" to start running the test case. While running, the screen will show the current time step and the total time step as an indication of current progress. The solver will generate output files in progression and, at the end of simulation, the solver will put the output files to solver/output. Those output files can be viweded using the software Paraview for further analyses.
+To run a test case, simply assign a value to the `FLAG` in `/solver/include/common_definitions.h`. `FLAG` = 0, 1, 2 indicates test case #1, #2, #3, respectively. Then go to `/solver` and type `make` to start running the test case. While running, the screen will show the current time step and the total time step as an indication of current progress. The solver will generate output files in progression and, at the end of simulation, the solver will put the output files to `/solver/output`. Those output files can be viweded using the software Paraview for further analyses.
 
 Next, we provide the instruction to assess the files we wrote for testing and profiling. The testing was done using googletest. And we use gprof for the profiling. (Jiarong could you please write something about testing and profiling here?)
-
-
-
-
-
 
 
 Instruction on using googletest:
