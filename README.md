@@ -1,6 +1,6 @@
 ### A multi-phase flow solver
-Tianju Xue, Yiheng Tao, Jiarong Wu
-APC 524, Fall 2018, Princeton University
+Tianju Xue, Yiheng Tao, and Jiarong Wu <br>
+APC 524, Fall 2018, Princeton University <br>
 January 15, 2019
 
 In this final project, we developed a solver that could be used to solve for problems relevant to mutli-phase flow in porous media. There are 5 folders (namely: solver, eigen, test, plot, and doc) and this README file in the submission bundle. The folder "solver" contains the header files and source files we created to develop the solver, and the files relavent to the three test cases. The folder "eigen" is an external library we employed in our solver to solve the system of linear equations. The folder "test" contains files we wrote to test the code along the development process. The folder "plot" includes two Python files, which we used to plot the comparison between numerical and analytical solutions in the test cases. Finally, the folder "doc" contains the Doxyfile that we used to do documentation. 
