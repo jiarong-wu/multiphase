@@ -14,12 +14,12 @@ Next, we provide the instruction to assess the files we wrote for testing and pr
 Instruction on using googletest:
 
 1. Clone the repo from https://github.com/google/googletest
-2. Follow the README file under /googletest
+2. Follow the `README` file under /googletest
 
 To do:
 Create a script for google test setup using relative path.
 
-Suppose the test file is under `${GTEST_DIR}/src/gtest-all.cc`
+Suppose the test file is under `${GTEST_DIR}/src/gtest-all.cc`. <br>
 Compile like:
 `g++ -std=c++11 -isystem ${GTEST_DIR}/include -I${GTEST_DIR} \
     -pthread -c ${GTEST_DIR}/src/gtest-all.cc
