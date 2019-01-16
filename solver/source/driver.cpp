@@ -20,17 +20,27 @@
 #include "problem_vertical.h"
 #include "cell.h"
 
-int main()
+int main(int argc, char *argv[])
 {
-   
+  if (argc != 3) {
+    printf("USAGE: %s <problem type> <adaptive option>\n", argv[0]);
+    exit(1);
+  }
+  const int FLAG = atoi(argv[1]);
+  const int ADAPT = atoi(argv[2]);
+
   if (FLAG == 0)
   {
     // We now have to manually choose modes, and the refine factor is hardcoded into 
     // problem_poisson.cpp Remember there is also a part in output manager that needs 
     // to be changed if changing REFINE_FACTOR or the source position
-    ProblemPoisson poisson;
-    // ProblemPoisson poisson(CELL_NUMBER, 1, 0.5, 0.5);
-    poisson.run(); 
+    ProblemPoisson *poisson;
+    if (ADAPT == 0)
+      poisson = new ProblemPoisson;
+    else if (ADAPT == 1)
+      poisson = new ProblemPoisson(CELL_NUMBER, 1, 0.5, 0.5);
+    poisson->run();
+    delete poisson; 
   }
   else if (FLAG == 1)
   {
